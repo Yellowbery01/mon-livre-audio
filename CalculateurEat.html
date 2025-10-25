@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tracker Nutritionnel Quotidien</title>
   <style>
-    /* ——— Design tokens ——— */
     :root {
       --bg: #f6f7fb;
       --card: #ffffff;
@@ -28,21 +27,11 @@
       line-height: 1.5;
     }
 
-    /* ——— Page header ——— */
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2rem 1rem 4rem;
-    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem 4rem; }
     header { text-align: center; margin-bottom: 1.5rem; }
-    header h1 {
-      margin: 0 0 .5rem;
-      font-size: clamp(1.5rem, 3.5vw, 2rem);
-      letter-spacing: 0.2px;
-    }
+    header h1 { margin: 0 0 .5rem; font-size: clamp(1.5rem, 3.5vw, 2rem); letter-spacing: 0.2px; }
     header p { margin: 0; color: var(--muted); font-size: 0.95rem; }
 
-    /* ——— Card ——— */
     .card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -50,51 +39,24 @@
       padding: 1.25rem;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
-    .card h2 {
-      font-size: 1.15rem;
-      margin: 0 0 .75rem;
-    }
+    .card h2 { font-size: 1.15rem; margin: 0 0 .75rem; }
 
-    /* ——— Form grid (foods input) ——— */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1rem 1rem;
-    }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 1rem; }
     @media (min-width: 720px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
     .field { display: flex; flex-direction: column; gap: .35rem; }
     .field label { font-weight: 600; font-size: 0.95rem; }
     .hint { color: var(--muted); font-size: 0.85rem; }
     input[type="number"], input[type="text"], input[type="password"], select {
-      width: 100%;
-      padding: .6rem .75rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: #fff;
-      font-size: 1rem;
+      width: 100%; padding: .6rem .75rem; border: 1px solid var(--border); border-radius: 8px; background: #fff; font-size: 1rem;
     }
     input[type="number"]:focus, input[type="text"]:focus, input[type="password"]:focus, select:focus {
-      outline: none;
-      border-color: var(--accent-2);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      outline: none; border-color: var(--accent-2); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
     }
 
-    /* ——— Actions ——— */
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .75rem;
-      margin-top: 1rem;
-    }
+    .actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1rem; }
     button {
-      appearance: none;
-      border: 1px solid var(--border);
-      background: var(--accent);
-      color: #fff;
-      font-weight: 600;
-      padding: .6rem .95rem;
-      border-radius: 8px;
-      cursor: pointer;
+      appearance: none; border: 1px solid var(--border); background: var(--accent); color: #fff;
+      font-weight: 600; padding: .6rem .95rem; border-radius: 8px; cursor: pointer;
       transition: transform .05s ease, box-shadow .15s ease, opacity .2s ease;
     }
     button:hover { box-shadow: 0 4px 14px rgba(14,165,233,0.25); }
@@ -103,87 +65,46 @@
     .danger { background: var(--danger); color: #fff; }
     .ok { background: var(--ok); color: #fff; }
 
-    /* ——— Table ——— */
     .table-wrap { overflow-x: auto; }
     table {
-      width: 100%;
-      border-collapse: collapse;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      background: #fff;
+      width: 100%; border-collapse: collapse; border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden; background: #fff;
     }
-    caption {
-      caption-side: top;
-      padding: .75rem;
-      font-weight: 700;
-      text-align: left;
-    }
-    thead th {
-      text-align: left;
-      background: #f3f4f6;
-      border-bottom: 1px solid var(--border);
-      padding: .65rem .75rem;
-      font-size: 0.95rem;
-    }
-    tbody td {
-      border-bottom: 1px solid var(--border);
-      padding: .6rem .75rem;
-      vertical-align: middle;
-    }
+    caption { caption-side: top; padding: .75rem; font-weight: 700; text-align: left; }
+    thead th { text-align: left; background: #f3f4f6; border-bottom: 1px solid var(--border); padding: .65rem .75rem; font-size: 0.95rem; }
+    tbody td { border-bottom: 1px solid var(--border); padding: .6rem .75rem; vertical-align: middle; }
     tbody tr:nth-child(even) td { background: var(--row-alt); }
-    tfoot td {
-      font-weight: 700;
-      background: #eef6ff;
-      border-top: 2px solid var(--accent);
-      padding: .7rem .75rem;
-    }
+    tfoot td { font-weight: 700; background: #eef6ff; border-top: 2px solid var(--accent); padding: .7rem .75rem; }
 
-    /* ——— Helper ——— */
     .note { margin-top: .75rem; color: var(--muted); font-size: 0.85rem; }
     .subtle { color: var(--muted); font-size: 0.85rem; }
     .inline-actions { display: flex; gap: .5rem; align-items: center; }
-    .kbd {
-      display: inline-block; padding: 0 .35rem; border: 1px solid var(--border); border-radius: 4px; background: #fff; font-size: 0.85rem;
-    }
 
-    /* ——— Gate (password section) ——— */
-    .gate {
-      display: flex;
-      gap: .5rem;
-      align-items: center;
-      margin-top: .75rem;
-    }
     .hidden { display: none; }
+    .gate { display: flex; gap: .5rem; align-items: center; margin-top: .75rem; flex-wrap: wrap; }
   </style>
 </head>
 <body>
   <main class="container" aria-labelledby="title">
     <header>
       <h1 id="title">Tracker Nutritionnel Quotidien</h1>
-      <p>Entrez les quantités, calculez les macros. Le tableau est en bas. Éditez le dictionnaire protégé par mot de passe.</p>
+      <p>Entrées en haut, tableau en bas. L’éditeur du dictionnaire est chiffré par mot de passe.</p>
     </header>
 
     <!-- ——— Inputs ——— -->
     <section class="card" aria-labelledby="form-title">
       <h2 id="form-title">Saisie des quantités</h2>
-
-      <!-- Form simple : inputs numériques générés dynamiquement depuis le dictionnaire -->
       <form id="nutrition-form" autocomplete="off">
-        <div class="grid" id="inputsGrid">
-          <!-- Champs d'entrée injectés par JS -->
-        </div>
-
+        <div class="grid" id="inputsGrid"><!-- Champs injectés via JS --></div>
         <div class="actions" aria-label="Actions">
           <button type="button" id="calculateBtn" aria-label="Calculer les apports">Calculer</button>
           <button type="button" class="secondary" id="resetBtn" aria-label="Réinitialiser">Réinitialiser</button>
         </div>
       </form>
-
-      <p class="note">Calcul basé sur des valeurs fixes par 100 g (ou par unité). Tout se met à jour sans rechargement.</p>
+      <p class="note">Calculs basés sur des valeurs fixes par 100 g (ou par unité). Mise à jour instantanée sans rechargement.</p>
     </section>
 
-    <!-- ——— Results table (placed below inputs, above editor) ——— -->
+    <!-- ——— Results table (below inputs) ——— -->
     <section class="card table-wrap" aria-labelledby="table-title" style="margin-top:1rem;">
       <h2 id="table-title">Récapitulatif nutritionnel</h2>
       <table id="resultTable">
@@ -198,7 +119,7 @@
             <th scope="col">Lipides (g)</th>
           </tr>
         </thead>
-        <tbody id="tableBody"><!-- Lignes injectées par JS --></tbody>
+        <tbody id="tableBody"></tbody>
         <tfoot>
           <tr>
             <td>Total</td>
@@ -212,38 +133,33 @@
       </table>
     </section>
 
-    <!-- ——— Editor gate + dictionary editor (password protected) ——— -->
+    <!-- ——— Editor (password-protected, client-side encryption) ——— -->
     <section class="card" aria-labelledby="dict-title" style="margin-top:1rem;">
-      <h2 id="dict-title">Dictionnaire des aliments (protégé)</h2>
-      <p class="subtle">Note: sur une page statique, le mot de passe est vérifié côté client. Il empêche l’accès casual mais n’est pas une sécurité forte. Pour une vraie protection, utilisez une authentification côté serveur.</p>
+      <h2 id="dict-title">Dictionnaire des aliments (chiffré)</h2>
+      <!--
+        Vraie protection, version statique:
+        - On ne stocke pas le mot de passe ni son hash.
+        - Le dictionnaire modifiable est CHIFFRÉ avec AES-GCM (clé dérivée PBKDF2).
+        - Sans mot de passe, impossible de lire/modifier la version chiffrée.
+        - Les valeurs par défaut restent visibles pour l’usage (non sensibles).
+        Limite: sur page statique, un utilisateur peut modifier le JS côté client,
+        mais il ne peut pas DÉCHIFFRER sans le mot de passe.
+      -->
 
       <!-- Gate controls -->
       <div class="gate" id="gateControls">
         <input id="gatePassword" type="password" placeholder="Mot de passe" aria-label="Mot de passe" />
         <button type="button" class="ok" id="gateUnlockBtn">Déverrouiller</button>
-        <button type="button" class="secondary" id="gateSetHashBtn" title="Définir le hash">Définir le hash</button>
-        <span class="subtle">Le hash est stocké dans votre navigateur (localStorage).</span>
+        <button type="button" class="secondary" id="gateLockBtn" title="Reverrouiller l’éditeur">Reverrouiller</button>
+        <span id="gateStatus" class="subtle">Éditeur verrouillé.</span>
       </div>
-
-      <!-- Gate feedback -->
-      <p id="gateMsg" class="subtle"></p>
 
       <!-- Editor content (hidden until unlocked) -->
       <div id="editorSection" class="hidden">
-        <!-- Liste éditable des aliments -->
         <div id="foodList"></div>
 
-        <!-- Formulaire d’ajout/modification -->
         <div class="card" style="margin-top:1rem;">
           <h3 style="font-size:1rem;margin:0 0 .5rem;">Ajouter ou modifier un aliment</h3>
-          <!--
-            Champs:
-            - key (identifiant unique, sans espaces)
-            - label (nom affiché)
-            - unit ("g" ou "count")
-            - ref ("per100" ou "perUnit")
-            - kcal, prot, carb, fat (référence par 100g ou par unité)
-          -->
           <form id="editorForm" autocomplete="off">
             <div class="grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
               <div class="field">
@@ -290,17 +206,17 @@
               <button type="submit" class="ok" id="saveFoodBtn">Enregistrer</button>
               <button type="button" class="secondary" id="clearEditorBtn">Effacer le formulaire</button>
             </div>
-            <p class="subtle">Astuce: cliquez sur “Modifier” dans la liste pour pré-remplir les champs. Supprimez un aliment pour le retirer.</p>
+            <p class="subtle">Cliquez sur “Modifier” pour pré-remplir. “Supprimer” retire l’aliment du dictionnaire chiffré.</p>
           </form>
         </div>
       </div>
+      <p class="note">Pour une protection serveur (auth réelle), il faut un backend. Ici, le contenu modifiable est chiffré côté client: sans mot de passe, il reste illisible.</p>
     </section>
   </main>
 
   <script>
     // —————————————————————————————————————————————————————————————
-    // Dictionnaire par défaut + persistance locale
-    // Ajout "Fromage blanc 3%" (par 100 g): 62 kcal, 8.5 prot, 3.9 gluc, 3.0 lip.
+    // Données par défaut (visibles, non chiffrées)
     // —————————————————————————————————————————————————————————————
     const DEFAULT_FOODS = {
       fruitsRouges: { label: "Fruits rouges", unit: "g", ref: "per100", kcal: 43, prot: 1.0, carb: 10.0, fat: 0.3 },
@@ -314,74 +230,79 @@
       fromageBlanc3: { label: "Fromage blanc 3%", unit: "g", ref: "per100", kcal: 62, prot: 8.5, carb: 3.9, fat: 3.0 }
     };
 
-    const STORAGE_FOODS = "nutritionFoodsV1";
-    const STORAGE_HASH  = "nutritionEditorHashV1"; // SHA-256 hex string
+    // —————————————————————————————————————————————————————————————
+    // Stockage et crypto (AES-GCM + PBKDF2)
+    // —————————————————————————————————————————————————————————————
+    const STORAGE_CIPHERTEXT = "nutritionFoodsEncryptedV1"; // Contient: { salt, iv, data } (base64)
+    const STORAGE_INPUTS = "nutritionInputsV1";             // Optionnel: sauvegarde des quantités saisies
     const inputRefs = {};
-    const toNumber = (v) => {
-      const n = Number(v);
-      return Number.isFinite(n) && n >= 0 ? n : 0;
-    };
+    let FOODS_VISIBLE = { ...DEFAULT_FOODS };               // Fusion visible (défaut + déchiffré si dispo)
+    let EDITABLE_FOODS = null;                              // Dictionnaire modifiable (plaintext en mémoire après déverrouillage)
+    let UNLOCKED = false;                                   // État du gate
+
+    // Helpers numériques
+    const toNumber = (v) => { const n = Number(v); return Number.isFinite(n) && n >= 0 ? n : 0; };
     const round2 = (v) => Math.round(v * 100) / 100;
 
-    function loadFoods() {
+    // Helpers base64
+    const b64encode = (u8) => btoa(String.fromCharCode(...u8));
+    const b64decode = (b64) => new Uint8Array([...atob(b64)].map(c => c.charCodeAt(0)));
+
+    // Dérive une clé AES via PBKDF2
+    async function deriveKey(password, saltB64) {
+      const salt = saltB64 ? b64decode(saltB64) : crypto.getRandomValues(new Uint8Array(16));
+      const enc = new TextEncoder().encode(password);
+      const keyMat = await crypto.subtle.importKey("raw", enc, "PBKDF2", false, ["deriveKey"]);
+      const key = await crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt, iterations: 150000, hash: "SHA-256" },
+        keyMat, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]
+      );
+      return { key, saltB64: b64encode(salt) };
+    }
+
+    // Chiffre un objet JSON avec AES-GCM
+    async function encryptJson(obj, password) {
+      const { key, saltB64 } = await deriveKey(password, null);
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const data = new TextEncoder().encode(JSON.stringify(obj));
+      const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, data);
+      return { salt: saltB64, iv: b64encode(iv), data: b64encode(new Uint8Array(ct)) };
+    }
+
+    // Déchiffre un JSON
+    async function decryptJson(bundle, password) {
+      const { salt, iv, data } = bundle;
+      const { key } = await deriveKey(password, salt);
+      const ptBuf = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64decode(iv) }, key, b64decode(data));
+      const text = new TextDecoder().decode(ptBuf);
+      return JSON.parse(text);
+    }
+
+    // Charge les aliments chiffrés (si présents)
+    function loadEncryptedFoodsBundle() {
       try {
-        const raw = localStorage.getItem(STORAGE_FOODS);
-        if (!raw) return { ...DEFAULT_FOODS };
-        const parsed = JSON.parse(raw);
-        return { ...DEFAULT_FOODS, ...parsed };
-      } catch {
-        return { ...DEFAULT_FOODS };
-      }
-    }
-    function saveFoods(foods) {
-      localStorage.setItem(STORAGE_FOODS, JSON.stringify(foods));
+        const raw = localStorage.getItem(STORAGE_CIPHERTEXT);
+        return raw ? JSON.parse(raw) : null;
+      } catch { return null; }
     }
 
-    // ——— Crypto utils: SHA-256 hex ———
-    async function sha256Hex(text) {
-      const enc = new TextEncoder().encode(text);
-      const buf = await crypto.subtle.digest("SHA-256", enc);
-      const arr = Array.from(new Uint8Array(buf));
-      return arr.map(b => b.toString(16).padStart(2, "0")).join("");
+    // Sauvegarde des quantités (optionnel)
+    function saveInputs() {
+      const snapshot = {};
+      Object.keys(inputRefs).forEach(k => { snapshot[k] = inputRefs[k].value; });
+      localStorage.setItem(STORAGE_INPUTS, JSON.stringify(snapshot));
+    }
+    function restoreInputs() {
+      try {
+        const raw = localStorage.getItem(STORAGE_INPUTS);
+        if (!raw) return;
+        const snap = JSON.parse(raw);
+        Object.keys(snap).forEach(k => { if (inputRefs[k]) inputRefs[k].value = snap[k]; });
+      } catch {}
     }
 
     // —————————————————————————————————————————————————————————————
-    // État & DOM refs
-    // —————————————————————————————————————————————————————————————
-    let FOODS = loadFoods();
-
-    const inputsGrid = document.getElementById("inputsGrid");
-    const tableBody = document.getElementById("tableBody");
-    const totalQtyCell = document.getElementById("totalQty");
-    const totalKcalCell = document.getElementById("totalKcal");
-    const totalProtCell = document.getElementById("totalProt");
-    const totalCarbCell = document.getElementById("totalCarb");
-    const totalFatCell = document.getElementById("totalFat");
-
-    const calculateBtn = document.getElementById("calculateBtn");
-    const resetBtn = document.getElementById("resetBtn");
-
-    const foodList = document.getElementById("foodList");
-    const editorForm = document.getElementById("editorForm");
-    const clearEditorBtn = document.getElementById("clearEditorBtn");
-    const edKey = document.getElementById("edKey");
-    const edLabel = document.getElementById("edLabel");
-    const edUnit = document.getElementById("edUnit");
-    const edRef = document.getElementById("edRef");
-    const edKcal = document.getElementById("edKcal");
-    const edProt = document.getElementById("edProt");
-    const edCarb = document.getElementById("edCarb");
-    const edFat = document.getElementById("edFat");
-
-    const gateControls = document.getElementById("gateControls");
-    const gatePassword = document.getElementById("gatePassword");
-    const gateUnlockBtn = document.getElementById("gateUnlockBtn");
-    const gateSetHashBtn = document.getElementById("gateSetHashBtn");
-    const gateMsg = document.getElementById("gateMsg");
-    const editorSection = document.getElementById("editorSection");
-
-    // —————————————————————————————————————————————————————————————
-    // Calcul macros
+    // Calcul des macros
     // —————————————————————————————————————————————————————————————
     function computeEntryMacros(item, qty) {
       const proportion = item.ref === "per100" ? qty / 100 : qty;
@@ -394,13 +315,44 @@
     }
 
     // —————————————————————————————————————————————————————————————
-    // Rendu inputs
+    // DOM refs
+    // —————————————————————————————————————————————————————————————
+    const inputsGrid = document.getElementById("inputsGrid");
+    const tableBody = document.getElementById("tableBody");
+    const totalQtyCell = document.getElementById("totalQty");
+    const totalKcalCell = document.getElementById("totalKcal");
+    const totalProtCell = document.getElementById("totalProt");
+    const totalCarbCell = document.getElementById("totalCarb");
+    const totalFatCell = document.getElementById("totalFat");
+    const calculateBtn = document.getElementById("calculateBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    const gateControls = document.getElementById("gateControls");
+    const gatePassword = document.getElementById("gatePassword");
+    const gateUnlockBtn = document.getElementById("gateUnlockBtn");
+    const gateLockBtn = document.getElementById("gateLockBtn");
+    const gateStatus = document.getElementById("gateStatus");
+    const editorSection = document.getElementById("editorSection");
+    const foodList = document.getElementById("foodList");
+
+    const editorForm = document.getElementById("editorForm");
+    const clearEditorBtn = document.getElementById("clearEditorBtn");
+    const edKey = document.getElementById("edKey");
+    const edLabel = document.getElementById("edLabel");
+    const edUnit = document.getElementById("edUnit");
+    const edRef = document.getElementById("edRef");
+    const edKcal = document.getElementById("edKcal");
+    const edProt = document.getElementById("edProt");
+    const edCarb = document.getElementById("edCarb");
+    const edFat = document.getElementById("edFat");
+
+    // —————————————————————————————————————————————————————————————
+    // Rendu des inputs (à partir de FOODS_VISIBLE)
     // —————————————————————————————————————————————————————————————
     function renderInputs() {
       inputsGrid.innerHTML = "";
-      Object.keys(FOODS).forEach((key) => {
-        const item = FOODS[key];
-
+      Object.keys(FOODS_VISIBLE).forEach((key) => {
+        const item = FOODS_VISIBLE[key];
         const field = document.createElement("div");
         field.className = "field";
 
@@ -413,77 +365,51 @@
         hint.textContent = item.unit === "g" ? "Quantité en g" : "Nombre entier";
 
         const input = document.createElement("input");
-        input.type = "number";
-        input.id = `qty_${key}`;
-        input.min = "0";
-        input.step = "1";
-        input.value = "0";
-        input.inputMode = "numeric";
+        input.type = "number"; input.id = `qty_${key}`;
+        input.min = "0"; input.step = "1"; input.value = "0"; input.inputMode = "numeric";
 
-        field.appendChild(label);
-        field.appendChild(hint);
-        field.appendChild(input);
+        field.appendChild(label); field.appendChild(hint); field.appendChild(input);
         inputsGrid.appendChild(field);
 
         inputRefs[key] = input;
-        input.addEventListener("input", renderTable);
+        input.addEventListener("input", () => { renderTable(); saveInputs(); });
       });
+      restoreInputs();
     }
 
     // —————————————————————————————————————————————————————————————
-    // Rendu tableau
+    // Tableau des résultats
     // —————————————————————————————————————————————————————————————
     function renderTable() {
       tableBody.innerHTML = "";
-
       let totalKcal = 0, totalProt = 0, totalCarb = 0, totalFat = 0;
 
-      Object.keys(FOODS).forEach((key) => {
-        const item = FOODS[key];
-        const input = inputRefs[key];
-        if (!input) return;
+      Object.keys(FOODS_VISIBLE).forEach((key) => {
+        const item = FOODS_VISIBLE[key];
+        const input = inputRefs[key]; if (!input) return;
         const qty = toNumber(input.value);
-
         const macros = computeEntryMacros(item, qty);
 
-        totalKcal += macros.kcal;
-        totalProt += macros.prot;
-        totalCarb += macros.carb;
-        totalFat  += macros.fat;
+        totalKcal += macros.kcal; totalProt += macros.prot; totalCarb += macros.carb; totalFat += macros.fat;
 
         const tr = document.createElement("tr");
-
-        const tdFood = document.createElement("td");
-        tdFood.textContent = item.label;
-        tr.appendChild(tdFood);
-
-        const tdQty = document.createElement("td");
-        tdQty.textContent = item.unit === "g" ? `${qty} g` : `${qty} unité${qty > 1 ? "s" : ""}`;
-        tr.appendChild(tdQty);
-
+        const tdFood = document.createElement("td"); tdFood.textContent = item.label; tr.appendChild(tdFood);
+        const tdQty = document.createElement("td"); tdQty.textContent = item.unit === "g" ? `${qty} g` : `${qty} unité${qty > 1 ? "s" : ""}`; tr.appendChild(tdQty);
         const tdKcal = document.createElement("td"); tdKcal.textContent = round2(macros.kcal);
         const tdProt = document.createElement("td"); tdProt.textContent = round2(macros.prot);
         const tdCarb = document.createElement("td"); tdCarb.textContent = round2(macros.carb);
         const tdFat  = document.createElement("td"); tdFat.textContent  = round2(macros.fat);
-
         tr.appendChild(tdKcal); tr.appendChild(tdProt); tr.appendChild(tdCarb); tr.appendChild(tdFat);
         tableBody.appendChild(tr);
       });
 
-      const gramsSum = Object.keys(FOODS)
-        .filter(k => FOODS[k].unit === "g")
+      const gramsSum = Object.keys(FOODS_VISIBLE).filter(k => FOODS_VISIBLE[k].unit === "g")
         .reduce((acc, k) => acc + toNumber(inputRefs[k]?.value || 0), 0);
+      const countsSummary = Object.keys(FOODS_VISIBLE).filter(k => FOODS_VISIBLE[k].unit === "count")
+        .map(k => ({ label: FOODS_VISIBLE[k].label, n: toNumber(inputRefs[k]?.value || 0) }))
+        .filter(x => x.n > 0).map(x => `${x.n} ${x.label.toLowerCase()}`);
 
-      const countsSummary = Object.keys(FOODS)
-        .filter(k => FOODS[k].unit === "count")
-        .map(k => ({ label: FOODS[k].label, n: toNumber(inputRefs[k]?.value || 0) }))
-        .filter(x => x.n > 0)
-        .map(x => `${x.n} ${x.label.toLowerCase()}`);
-
-      const qtyText = countsSummary.length
-        ? `${round2(gramsSum)} g + ${countsSummary.join(" + ")}`
-        : `${round2(gramsSum)} g`;
-
+      const qtyText = countsSummary.length ? `${round2(gramsSum)} g + ${countsSummary.join(" + ")}` : `${round2(gramsSum)} g`;
       totalQtyCell.textContent = qtyText;
       totalKcalCell.textContent = round2(totalKcal);
       totalProtCell.textContent = round2(totalProt);
@@ -492,14 +418,14 @@
     }
 
     // —————————————————————————————————————————————————————————————
-    // Dictionnaire: liste + actions
+    // Rendu du dictionnaire (éditable uniquement si UNLOCKED)
     // —————————————————————————————————————————————————————————————
     function renderFoodList() {
       foodList.innerHTML = "";
+      if (!UNLOCKED) return; // Protection: pas de liste si verrouillé
+
       const table = document.createElement("table");
-      table.style.width = "100%";
-      table.style.borderCollapse = "collapse";
-      table.style.border = `1px solid var(--border)`;
+      table.style.width = "100%"; table.style.borderCollapse = "collapse"; table.style.border = `1px solid var(--border)`;
       table.innerHTML = `
         <thead>
           <tr>
@@ -514,12 +440,10 @@
         <tbody></tbody>
       `;
       const tbody = table.querySelector("tbody");
-      const rowAlt = getComputedStyle(document.documentElement).getPropertyValue('--row-alt').trim() || "#fafafa";
-
-      Object.keys(FOODS).forEach((key, idx) => {
-        const it = FOODS[key];
+      const entries = Object.entries(EDITABLE_FOODS || {});
+      entries.forEach(([key, it], idx) => {
         const tr = document.createElement("tr");
-        const alt = idx % 2 ? `background:${rowAlt}` : "";
+        const alt = idx % 2 ? `background:${getComputedStyle(document.documentElement).getPropertyValue('--row-alt').trim() || "#fafafa"}` : "";
         tr.innerHTML = `
           <td style="padding:.5rem;border-bottom:1px solid var(--border);${alt}">${key}</td>
           <td style="padding:.5rem;border-bottom:1px solid var(--border);${alt}">${it.label}</td>
@@ -535,61 +459,48 @@
         `;
         tbody.appendChild(tr);
       });
-
       foodList.appendChild(table);
 
       foodList.querySelectorAll("[data-edit]").forEach(btn => {
         btn.addEventListener("click", () => {
           const k = btn.getAttribute("data-edit");
-          const it = FOODS[k];
-          edKey.value = k;
-          edLabel.value = it.label;
-          edUnit.value = it.unit;
-          edRef.value = it.ref;
-          edKcal.value = it.kcal;
-          edProt.value = it.prot;
-          edCarb.value = it.carb;
-          edFat.value = it.fat;
+          const it = EDITABLE_FOODS[k];
+          edKey.value = k; edLabel.value = it.label; edUnit.value = it.unit; edRef.value = it.ref;
+          edKcal.value = it.kcal; edProt.value = it.prot; edCarb.value = it.carb; edFat.value = it.fat;
           edKey.disabled = true;
         });
       });
-
       foodList.querySelectorAll("[data-delete]").forEach(btn => {
-        btn.addEventListener("click", () => {
+        btn.addEventListener("click", async () => {
           const k = btn.getAttribute("data-delete");
           if (!confirm(`Supprimer l'aliment "${k}" ?`)) return;
-          delete FOODS[k];
-          saveFoods(FOODS);
-          rebuildInputsAndTable();
+          delete EDITABLE_FOODS[k];
+          await persistEncryptedFoods();
+          mergeVisibleFoods(); rebuildInputsAndTable();
           if (edKey.value === k) clearEditor();
         });
       });
     }
 
-    // —————————————————————————————————————————————————————————————
-    // Actions globales
-    // —————————————————————————————————————————————————————————————
-    calculateBtn.addEventListener("click", renderTable);
-    resetBtn.addEventListener("click", () => {
-      Object.keys(inputRefs).forEach(k => { inputRefs[k].value = "0"; });
-      renderTable();
-    });
+    // Fusionne les aliments éditables avec les défauts pour l’affichage
+    function mergeVisibleFoods() {
+      FOODS_VISIBLE = { ...DEFAULT_FOODS, ...(EDITABLE_FOODS || {}) };
+    }
 
+    // —————————————————————————————————————————————————————————————
+    // Éditeur: enregistrement (chiffrement + persistance)
+    // —————————————————————————————————————————————————————————————
     function clearEditor() {
-      edKey.value = "";
-      edLabel.value = "";
-      edUnit.value = "g";
-      edRef.value = "per100";
-      edKcal.value = "";
-      edProt.value = "";
-      edCarb.value = "";
-      edFat.value = "";
+      edKey.value = ""; edLabel.value = ""; edUnit.value = "g"; edRef.value = "per100";
+      edKcal.value = ""; edProt.value = ""; edCarb.value = ""; edFat.value = "";
       edKey.disabled = false;
     }
     clearEditorBtn.addEventListener("click", clearEditor);
 
-    editorForm.addEventListener("submit", (e) => {
+    editorForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+      if (!UNLOCKED) { alert("Éditeur verrouillé."); return; }
+
       const key = edKey.value.trim();
       const label = edLabel.value.trim();
       const unit = edUnit.value;
@@ -604,11 +515,74 @@
       if (!(unit === "g" || unit === "count")) { alert("Unité invalide."); return; }
       if (!(ref === "per100" || ref === "perUnit")) { alert("Référence invalide."); return; }
 
-      FOODS[key] = { label, unit, ref, kcal, prot, carb, fat };
-      saveFoods(FOODS);
-      rebuildInputsAndTable();
+      EDITABLE_FOODS[key] = { label, unit, ref, kcal, prot, carb, fat };
+      await persistEncryptedFoods();
+      mergeVisibleFoods(); rebuildInputsAndTable();
       if (inputRefs[key]) inputRefs[key].value = inputRefs[key].value || "0";
       clearEditor();
+    });
+
+    // Persiste EDITABLE_FOODS en chiffré (nécessite mot de passe courant)
+    let CURRENT_PASSWORD = null;
+    async function persistEncryptedFoods() {
+      if (!CURRENT_PASSWORD) { alert("Mot de passe requis pour chiffrer."); return; }
+      const bundle = await encryptJson(EDITABLE_FOODS, CURRENT_PASSWORD);
+      localStorage.setItem(STORAGE_CIPHERTEXT, JSON.stringify(bundle));
+    }
+
+    // —————————————————————————————————————————————————————————————
+    // Gate: déverrouillage / verrouillage (AES-GCM, pas de hash stocké)
+    // —————————————————————————————————————————————————————————————
+    gateUnlockBtn.addEventListener("click", async () => {
+      const pw = gatePassword.value || "";
+      if (!pw) { alert("Entrez un mot de passe."); return; }
+
+      const bundle = loadEncryptedFoodsBundle();
+      if (!bundle) {
+        // Première configuration: crée un dictionnaire éditable vide, chiffré avec ce mot de passe
+        CURRENT_PASSWORD = pw;
+        EDITABLE_FOODS = {}; // vide
+        await persistEncryptedFoods();
+        UNLOCKED = true;
+        gateStatus.textContent = "Éditeur déverrouillé (nouvelle configuration).";
+        editorSection.classList.remove("hidden");
+        renderFoodList();
+        mergeVisibleFoods(); rebuildInputsAndTable();
+        return;
+      }
+
+      try {
+        // Déchiffre avec le mot de passe fourni
+        const decrypted = await decryptJson(bundle, pw);
+        if (typeof decrypted !== "object" || decrypted === null) throw new Error("Format invalide");
+        CURRENT_PASSWORD = pw;
+        EDITABLE_FOODS = decrypted;
+        UNLOCKED = true;
+        gateStatus.textContent = "Éditeur déverrouillé.";
+        editorSection.classList.remove("hidden");
+        renderFoodList();
+        mergeVisibleFoods(); rebuildInputsAndTable();
+      } catch {
+        gateStatus.textContent = "Mot de passe incorrect.";
+      }
+    });
+
+    gateLockBtn.addEventListener("click", () => {
+      CURRENT_PASSWORD = null; UNLOCKED = false; EDITABLE_FOODS = null;
+      editorSection.classList.add("hidden");
+      gateStatus.textContent = "Éditeur verrouillé.";
+      // À la fermeture, l’affichage reste fusionné avec DEFAULT_FOODS seul
+      mergeVisibleFoods(); rebuildInputsAndTable();
+    });
+
+    // —————————————————————————————————————————————————————————————
+    // Global actions
+    // —————————————————————————————————————————————————————————————
+    calculateBtn.addEventListener("click", renderTable);
+    resetBtn.addEventListener("click", () => {
+      Object.keys(inputRefs).forEach(k => { inputRefs[k].value = "0"; });
+      saveInputs();
+      renderTable();
     });
 
     function rebuildInputsAndTable() {
@@ -617,57 +591,24 @@
       Object.keys(inputRefs).forEach(k => delete inputRefs[k]);
       renderInputs();
       Object.keys(oldValues).forEach(k => { if (inputRefs[k]) inputRefs[k].value = oldValues[k]; });
-      renderFoodList();
       renderTable();
     }
 
     // —————————————————————————————————————————————————————————————
-    // Password gate (client-side)
+    // Init
     // —————————————————————————————————————————————————————————————
-    // Flux:
-    // - L'utilisateur définit une fois le hash (SHA-256) via "Définir le hash" => stocké en localStorage
-    // - Pour déverrouiller, on hash le mot de passe saisi et compare au hash stocké
-    // - Si pas de hash défini, l'éditeur reste caché (vous devez le définir sur ce navigateur)
-    function updateGateStateMessage() {
-      const hasHash = !!localStorage.getItem(STORAGE_HASH);
-      gateMsg.textContent = hasHash
-        ? "Un hash de mot de passe est défini dans ce navigateur. Entrez le mot de passe pour déverrouiller."
-        : "Aucun hash n'est défini. Cliquez sur “Définir le hash” pour créer le hash du mot de passe (stocké localement).";
-    }
-
-    gateSetHashBtn.addEventListener("click", async () => {
-      const pw = prompt("Entrez le mot de passe à hasher (il ne sera pas stocké, uniquement son hash):");
-      if (!pw) return;
-      const hex = await sha256Hex(pw);
-      localStorage.setItem(STORAGE_HASH, hex);
-      updateGateStateMessage();
-      alert("Hash défini localement. Conservez votre mot de passe.");
-    });
-
-    gateUnlockBtn.addEventListener("click", async () => {
-      const stored = localStorage.getItem(STORAGE_HASH);
-      if (!stored) {
-        alert("Aucun hash défini. Cliquez sur “Définir le hash” d’abord.");
-        return;
-      }
-      const inputPw = gatePassword.value || "";
-      const hex = await sha256Hex(inputPw);
-      if (hex === stored) {
-        editorSection.classList.remove("hidden");
-        gateMsg.textContent = "Éditeur déverrouillé.";
-        gateControls.classList.add("hidden");
-      } else {
-        gateMsg.textContent = "Mot de passe incorrect.";
-      }
-    });
-
-    // —————————————————————————————————————————————————————————————
-    // Initialisation
-    // —————————————————————————————————————————————————————————————
+    mergeVisibleFoods();
     renderInputs();
     renderTable();
-    updateGateStateMessage();
-    // L'éditeur reste caché tant que non déverrouillé
+
+    // —————————————————————————————————————————————————————————————
+    // Commentaires clés:
+    // - AES-GCM + PBKDF2: EDITABLE_FOODS est chiffré avec un mot de passe. Rien n’est stocké en clair, pas même le hash du mot de passe.
+    // - Première utilisation: si aucun bundle en localStorage, entrer un mot de passe crée le coffre chiffré.
+    // - Déverrouillage: déchiffre le bundle; sans le bon mot de passe, la partie éditable reste inaccessible.
+    // - Limite statique: un utilisateur peut altérer le JS sur son navigateur, mais ne peut pas récupérer le contenu chiffré sans le mot de passe.
+    // - Pour une “vraie” auth multi-utilisateur, prévoir un backend (sessions/JWT) et stocker côté serveur.
+    // —————————————————————————————————————————————————————————————
   </script>
 </body>
 </html>
