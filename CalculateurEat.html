@@ -5,16 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tracker Nutritionnel Quotidien</title>
   <style>
-    /* ——— Reset & base ——— */
+    /* ——— Design tokens ——— */
     :root {
-      --bg: #f7f7f9;
+      --bg: #f6f7fb;
       --card: #ffffff;
       --text: #1a1a1a;
       --muted: #6b7280;
       --accent: #0ea5e9;
+      --accent-2: #2563eb;
       --border: #e5e7eb;
       --row-alt: #fafafa;
-      --focus: #2563eb;
+      --danger: #ef4444;
+      --ok: #16a34a;
     }
     * { box-sizing: border-box; }
     html, body { height: 100%; }
@@ -26,28 +28,34 @@
       line-height: 1.5;
     }
 
-    /* ——— Layout ——— */
+    /* ——— Page header ——— */
     .container {
-      max-width: 960px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 2rem 1rem 4rem;
     }
-    header {
-      margin-bottom: 1.5rem;
-      text-align: center;
-    }
+    header { text-align: center; margin-bottom: 1.5rem; }
     header h1 {
       margin: 0 0 .5rem;
       font-size: clamp(1.5rem, 3.5vw, 2rem);
       letter-spacing: 0.2px;
     }
-    header p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.95rem;
+    header p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+
+    /* ——— Two-column layout (left inputs, right table) ——— */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    @media (min-width: 900px) {
+      .split {
+        grid-template-columns: 1fr 1.2fr; /* Left (forms) / Right (table) */
+        align-items: start;
+      }
     }
 
-    /* ——— Card/sections ——— */
+    /* ——— Card ——— */
     .card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -55,30 +63,22 @@
       padding: 1.25rem;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
+    .card h2 {
+      font-size: 1.15rem;
+      margin: 0 0 .75rem;
+    }
 
-    /* ——— Form grid ——— */
+    /* ——— Form grid (foods input) ——— */
     .grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 1rem 1rem;
     }
-    @media (min-width: 720px) {
-      .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    }
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: .35rem;
-    }
-    .field label {
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
-    .hint {
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-    .field input[type="number"] {
+    @media (min-width: 720px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    .field { display: flex; flex-direction: column; gap: .35rem; }
+    .field label { font-weight: 600; font-size: 0.95rem; }
+    .hint { color: var(--muted); font-size: 0.85rem; }
+    input[type="number"], input[type="text"], select {
       width: 100%;
       padding: .6rem .75rem;
       border: 1px solid var(--border);
@@ -86,9 +86,9 @@
       background: #fff;
       font-size: 1rem;
     }
-    .field input[type="number"]:focus {
+    input[type="number"]:focus, input[type="text"]:focus, select:focus {
       outline: none;
-      border-color: var(--focus);
+      border-color: var(--accent-2);
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
     }
 
@@ -112,17 +112,12 @@
     }
     button:hover { box-shadow: 0 4px 14px rgba(14,165,233,0.25); }
     button:active { transform: translateY(1px); }
-    button.secondary {
-      background: #fff;
-      color: var(--text);
-      border-color: var(--border);
-    }
+    .secondary { background: #fff; color: var(--text); }
+    .danger { background: var(--danger); color: #fff; }
+    .ok { background: var(--ok); color: #fff; }
 
     /* ——— Table ——— */
-    .table-wrap {
-      margin-top: 1.25rem;
-      overflow-x: auto;
-    }
+    .table-wrap { overflow-x: auto; }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -149,9 +144,7 @@
       padding: .6rem .75rem;
       vertical-align: middle;
     }
-    tbody tr:nth-child(even) td {
-      background: var(--row-alt);
-    }
+    tbody tr:nth-child(even) td { background: var(--row-alt); }
     tfoot td {
       font-weight: 700;
       background: #eef6ff;
@@ -159,11 +152,12 @@
       padding: .7rem .75rem;
     }
 
-    /* ——— Small print ——— */
-    .note {
-      margin-top: .75rem;
-      color: var(--muted);
-      font-size: 0.85rem;
+    /* ——— Helper ——— */
+    .note { margin-top: .75rem; color: var(--muted); font-size: 0.85rem; }
+    .subtle { color: var(--muted); font-size: 0.85rem; }
+    .inline-actions { display: flex; gap: .5rem; align-items: center; }
+    .kbd {
+      display: inline-block; padding: 0 .35rem; border: 1px solid var(--border); border-radius: 4px; background: #fff; font-size: 0.85rem;
     }
   </style>
 </head>
@@ -171,189 +165,207 @@
   <main class="container" aria-labelledby="title">
     <header>
       <h1 id="title">Tracker Nutritionnel Quotidien</h1>
-      <p>Entrez vos quantités, puis calculez les calories et macros. Tout est stocké localement, aucun rechargement.</p>
+      <p>Entrées à gauche, tableau à droite. Modifiez le dictionnaire d’aliments directement depuis la page.</p>
     </header>
 
-    <section class="card" aria-labelledby="form-title">
-      <h2 id="form-title" style="font-size:1.15rem;margin:0 0 .75rem;">Saisie des quantités</h2>
+    <!-- ——— Split layout: left (forms & dictionary), right (results table) ——— -->
+    <section class="split">
+      <!-- ——— Left side: inputs & dictionary manager ——— -->
+      <div class="card" aria-labelledby="form-title">
+        <h2 id="form-title">Saisie des quantités</h2>
 
-      <!-- Form simple : inputs numériques avec valeurs par défaut à 0 -->
-      <form id="nutrition-form" autocomplete="off">
-        <div class="grid">
-          <!-- Chaque champ est associé à une clé de l’objet nutritionData -->
-          <div class="field">
-            <label for="fruitsRouges">Fruits rouges</label>
-            <span class="hint">Quantité en g</span>
-            <input id="fruitsRouges" name="fruitsRouges" type="number" min="0" step="1" value="0" inputmode="numeric" />
+        <!-- Form simple : inputs numériques avec valeurs par défaut à 0 -->
+        <form id="nutrition-form" autocomplete="off">
+          <div class="grid" id="inputsGrid">
+            <!-- Champs d'entrée générés dynamiquement en fonction du dictionnaire -->
           </div>
 
-          <div class="field">
-            <label for="banane">Banane</label>
-            <span class="hint">Nombre entier</span>
-            <input id="banane" name="banane" type="number" min="0" step="1" value="0" inputmode="numeric" />
+          <div class="actions" aria-label="Actions">
+            <!-- Bouton Calculer déclenche le recalcul et la mise à jour du tableau -->
+            <button type="button" id="calculateBtn" aria-label="Calculer les apports">Calculer</button>
+            <!-- Bouton Réinitialiser remet tous les champs à 0 -->
+            <button type="button" class="secondary" id="resetBtn" aria-label="Réinitialiser">Réinitialiser</button>
           </div>
+        </form>
 
-          <div class="field">
-            <label for="floconsAvoine">Flocons d'avoine</label>
-            <span class="hint">Quantité en g</span>
-            <input id="floconsAvoine" name="floconsAvoine" type="number" min="0" step="1" value="0" inputmode="numeric" />
-          </div>
+        <p class="note">Les macros sont calculées à partir de valeurs fixes par 100 g (ou par unité pour la banane). Les données peuvent être ajustées via l’éditeur ci-dessous.</p>
 
-          <div class="field">
-            <label for="huileOlive">Huile d'olive</label>
-            <span class="hint">Quantité en g</span>
-            <input id="huileOlive" name="huileOlive" type="number" min="0" step="1" value="0" inputmode="numeric" />
-          </div>
+        <!-- ——— Dictionary manager: add/edit/remove foods ——— -->
+        <hr style="margin:1rem 0;border:none;border-top:1px solid var(--border);" />
+        <h2 style="font-size:1.05rem;margin:.25rem 0 .75rem;">Dictionnaire des aliments</h2>
 
-          <div class="field">
-            <label for="lentilles">Lentilles en conserve</label>
-            <span class="hint">Quantité en g (égouttées)</span>
-            <input id="lentilles" name="lentilles" type="number" min="0" step="1" value="0" inputmode="numeric" />
-          </div>
+        <!-- Liste éditable des aliments -->
+        <div id="foodList"></div>
 
-          <div class="field">
-            <label for="patesCrues">Pâtes (crues)</label>
-            <span class="hint">Quantité en g</span>
-            <input id="patesCrues" name="patesCrues" type="number" min="0" step="1" value="0" inputmode="numeric" />
-          </div>
-
-          <div class="field">
-            <label for="steakHache">Steak haché (15% MG)</label>
-            <span class="hint">Quantité en g</span>
-            <input id="steakHache" name="steakHache" type="number" min="0" step="1" value="0" inputmode="numeric" />
-          </div>
-
-          <div class="field">
-            <label for="escalopeVolaille">Escalope de poulet ou dinde</label>
-            <span class="hint">Quantité en g</span>
-            <input id="escalopeVolaille" name="escalopeVolaille" type="number" min="0" step="1" value="0" inputmode="numeric" />
-          </div>
+        <!-- Formulaire d’ajout/modification -->
+        <div class="card" style="margin-top:1rem;">
+          <h3 style="font-size:1rem;margin:0 0 .5rem;">Ajouter ou modifier un aliment</h3>
+          <!--
+            Champs:
+            - key (identifiant unique, sans espaces)
+            - label (nom affiché)
+            - unit ("g" ou "count")
+            - ref ("per100" ou "perUnit")
+            - kcal, prot, carb, fat (référence par 100g ou par unité)
+          -->
+          <form id="editorForm" autocomplete="off">
+            <div class="grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+              <div class="field">
+                <label for="edKey">Identifiant</label>
+                <span class="hint">Sans espaces, unique (ex: fromageBlanc3)</span>
+                <input id="edKey" type="text" required />
+              </div>
+              <div class="field">
+                <label for="edLabel">Nom affiché</label>
+                <input id="edLabel" type="text" required />
+              </div>
+              <div class="field">
+                <label for="edUnit">Unité</label>
+                <select id="edUnit" required>
+                  <option value="g">g (par 100 g)</option>
+                  <option value="count">count (par unité)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="edRef">Référence</label>
+                <select id="edRef" required>
+                  <option value="per100">per100</option>
+                  <option value="perUnit">perUnit</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="edKcal">Calories (kcal)</label>
+                <input id="edKcal" type="number" min="0" step="0.01" required />
+              </div>
+              <div class="field">
+                <label for="edProt">Protéines (g)</label>
+                <input id="edProt" type="number" min="0" step="0.01" required />
+              </div>
+              <div class="field">
+                <label for="edCarb">Glucides (g)</label>
+                <input id="edCarb" type="number" min="0" step="0.01" required />
+              </div>
+              <div class="field">
+                <label for="edFat">Lipides (g)</label>
+                <input id="edFat" type="number" min="0" step="0.01" required />
+              </div>
+            </div>
+            <div class="actions">
+              <button type="submit" class="ok" id="saveFoodBtn">Enregistrer</button>
+              <button type="button" class="secondary" id="clearEditorBtn">Effacer le formulaire</button>
+            </div>
+            <p class="subtle">Astuce: cliquez sur “Modifier” dans la liste pour pré-remplir les champs. Supprimez un aliment pour le retirer de la page.</p>
+          </form>
         </div>
+      </div>
 
-        <div class="actions" aria-label="Actions">
-          <!-- Bouton Calculer déclenche le recalcul et la mise à jour du tableau -->
-          <button type="button" id="calculateBtn" aria-label="Calculer les apports">Calculer</button>
-          <!-- Bouton Réinitialiser remet tous les champs à 0 -->
-          <button type="button" class="secondary" id="resetBtn" aria-label="Réinitialiser">Réinitialiser</button>
-        </div>
-      </form>
-
-      <p class="note">Les macros sont calculées à partir de valeurs fixes par 100 g (ou par unité pour la banane).</p>
-    </section>
-
-    <section class="table-wrap card" aria-labelledby="table-title">
-      <h2 id="table-title" style="font-size:1.15rem;margin:0 0 .75rem;">Récapitulatif nutritionnel</h2>
-      <!-- Tableau dynamique : reconstruit à chaque calcul -->
-      <table id="resultTable">
-        <caption>Apports par aliment et totaux</caption>
-        <thead>
-          <tr>
-            <th scope="col">Aliment</th>
-            <th scope="col">Quantité</th>
-            <th scope="col">Calories (kcal)</th>
-            <th scope="col">Protéines (g)</th>
-            <th scope="col">Glucides (g)</th>
-            <th scope="col">Lipides (g)</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody">
-          <!-- Lignes injectées par JS -->
-        </tbody>
-        <tfoot>
-          <tr>
-            <td>Total</td>
-            <td id="totalQty">—</td>
-            <td id="totalKcal">0</td>
-            <td id="totalProt">0</td>
-            <td id="totalCarb">0</td>
-            <td id="totalFat">0</td>
-          </tr>
-        </tfoot>
-      </table>
+      <!-- ——— Right side: results table ——— -->
+      <div class="card table-wrap" aria-labelledby="table-title">
+        <h2 id="table-title">Récapitulatif nutritionnel</h2>
+        <table id="resultTable">
+          <caption>Apports par aliment et totaux</caption>
+          <thead>
+            <tr>
+              <th scope="col">Aliment</th>
+              <th scope="col">Quantité</th>
+              <th scope="col">Calories (kcal)</th>
+              <th scope="col">Protéines (g)</th>
+              <th scope="col">Glucides (g)</th>
+              <th scope="col">Lipides (g)</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"><!-- Lignes injectées par JS --></tbody>
+          <tfoot>
+            <tr>
+              <td>Total</td>
+              <td id="totalQty">—</td>
+              <td id="totalKcal">0</td>
+              <td id="totalProt">0</td>
+              <td id="totalCarb">0</td>
+              <td id="totalFat">0</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
     </section>
   </main>
 
   <script>
     // —————————————————————————————————————————————————————————————
-    // Données nutritionnelles fixes
-    // Chaque entrée définit le mode de calcul:
-    // - unit: "g" pour valeurs par 100 g; "count" pour banane par unité
-    // - ref: "per100" ou "perUnit" indique l'échelle de référence
+    // Dictionnaire d'aliments (par défaut) + persistance locale
+    // Ajout de "Fromage blanc 3%" (par 100 g): ~62 kcal, 8.5 g prot, 3.9 g gluc, 3.0 g lip.
     // —————————————————————————————————————————————————————————————
-    const nutritionData = {
-      fruitsRouges: {
-        label: "Fruits rouges",
-        unit: "g",
-        ref: "per100",
-        kcal: 43, prot: 1.0, carb: 10.0, fat: 0.3
-      },
-      banane: {
-        label: "Banane",
-        unit: "count",
-        ref: "perUnit",
-        kcal: 89, prot: 1.1, carb: 23.0, fat: 0.3,
-        // info utile si on souhaitait estimer en g (~120 g), non utilisé dans le calcul
-        approxGramPerUnit: 120
-      },
-      floconsAvoine: {
-        label: "Flocons d'avoine",
-        unit: "g",
-        ref: "per100",
-        kcal: 389, prot: 17.0, carb: 66.0, fat: 7.0
-      },
-      huileOlive: {
-        label: "Huile d'olive",
-        unit: "g",
-        ref: "per100",
-        kcal: 884, prot: 0.0, carb: 0.0, fat: 100.0
-      },
-      lentilles: {
-        label: "Lentilles en conserve",
-        unit: "g",
-        ref: "per100",
-        kcal: 116, prot: 9.0, carb: 20.0, fat: 0.4
-      },
-      patesCrues: {
-        label: "Pâtes crues",
-        unit: "g",
-        ref: "per100",
-        kcal: 371, prot: 13.0, carb: 75.0, fat: 1.5
-      },
-      steakHache: {
-        label: "Steak haché (15% MG)",
-        unit: "g",
-        ref: "per100",
-        kcal: 250, prot: 20.0, carb: 0.0, fat: 18.0
-      },
-      escalopeVolaille: {
-        label: "Escalope de poulet/dinde",
-        unit: "g",
-        ref: "per100",
-        kcal: 110, prot: 23.0, carb: 0.0, fat: 1.5
-      }
+    const DEFAULT_FOODS = {
+      fruitsRouges: { label: "Fruits rouges", unit: "g", ref: "per100", kcal: 43, prot: 1.0, carb: 10.0, fat: 0.3 },
+      banane: { label: "Banane", unit: "count", ref: "perUnit", kcal: 89, prot: 1.1, carb: 23.0, fat: 0.3 },
+      floconsAvoine: { label: "Flocons d'avoine", unit: "g", ref: "per100", kcal: 389, prot: 17.0, carb: 66.0, fat: 7.0 },
+      huileOlive: { label: "Huile d'olive", unit: "g", ref: "per100", kcal: 884, prot: 0.0, carb: 0.0, fat: 100.0 },
+      lentilles: { label: "Lentilles en conserve", unit: "g", ref: "per100", kcal: 116, prot: 9.0, carb: 20.0, fat: 0.4 },
+      patesCrues: { label: "Pâtes (crues)", unit: "g", ref: "per100", kcal: 371, prot: 13.0, carb: 75.0, fat: 1.5 },
+      steakHache: { label: "Steak haché (15% MG)", unit: "g", ref: "per100", kcal: 250, prot: 20.0, carb: 0.0, fat: 18.0 },
+      escalopeVolaille: { label: "Escalope de poulet/dinde", unit: "g", ref: "per100", kcal: 110, prot: 23.0, carb: 0.0, fat: 1.5 },
+      fromageBlanc3: { label: "Fromage blanc 3%", unit: "g", ref: "per100", kcal: 62, prot: 8.5, carb: 3.9, fat: 3.0 }
     };
+
+    const STORAGE_KEY = "nutritionFoodsV1";
+
+    function loadFoods() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return { ...DEFAULT_FOODS };
+        const parsed = JSON.parse(raw);
+        // Fusion douce: s'assure que les clés par défaut existent si l'utilisateur a nettoyé
+        return { ...DEFAULT_FOODS, ...parsed };
+      } catch {
+        return { ...DEFAULT_FOODS };
+      }
+    }
+    function saveFoods(foods) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(foods));
+    }
+
+    // —————————————————————————————————————————————————————————————
+    // État global (dictionnaire + valeurs saisies)
+    // —————————————————————————————————————————————————————————————
+    let FOODS = loadFoods();
+
+    // Map des inputs quantité (clé -> input)
+    const inputRefs = {};
+    const inputsGrid = document.getElementById("inputsGrid");
+    const tableBody = document.getElementById("tableBody");
+    const totalQtyCell = document.getElementById("totalQty");
+    const totalKcalCell = document.getElementById("totalKcal");
+    const totalProtCell = document.getElementById("totalProt");
+    const totalCarbCell = document.getElementById("totalCarb");
+    const totalFatCell = document.getElementById("totalFat");
+
+    const calculateBtn = document.getElementById("calculateBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const foodList = document.getElementById("foodList");
+
+    // Éditeur
+    const edKey = document.getElementById("edKey");
+    const edLabel = document.getElementById("edLabel");
+    const edUnit = document.getElementById("edUnit");
+    const edRef = document.getElementById("edRef");
+    const edKcal = document.getElementById("edKcal");
+    const edProt = document.getElementById("edProt");
+    const edCarb = document.getElementById("edCarb");
+    const edFat = document.getElementById("edFat");
+    const editorForm = document.getElementById("editorForm");
+    const clearEditorBtn = document.getElementById("clearEditorBtn");
 
     // —————————————————————————————————————————————————————————————
     // Utilitaires
     // —————————————————————————————————————————————————————————————
-    const number = (v) => {
+    const toNumber = (v) => {
       const n = Number(v);
       return Number.isFinite(n) && n >= 0 ? n : 0;
     };
-
     const round2 = (v) => Math.round(v * 100) / 100;
 
-    // Calcule les macros pour une entrée donnée et une quantité
-    function computeEntryMacros(key, qty) {
-      const item = nutritionData[key];
-      if (!item) return null;
-
-      // Pour les unités "g" avec ref per100: proportion = qty / 100
-      // Pour banane "count" avec ref perUnit: proportion = qty (chaque unité)
-      const proportion = item.ref === "per100"
-        ? (qty / 100)
-        : qty;
-
+    function computeEntryMacros(item, qty) {
+      const proportion = item.ref === "per100" ? qty / 100 : qty;
       return {
         kcal: round2(item.kcal * proportion),
         prot: round2(item.prot * proportion),
@@ -363,53 +375,135 @@
     }
 
     // —————————————————————————————————————————————————————————————
-    // DOM refs
+    // Rendu dynamique des inputs et du dictionnaire
     // —————————————————————————————————————————————————————————————
-    const form = document.getElementById("nutrition-form");
-    const calculateBtn = document.getElementById("calculateBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const tableBody = document.getElementById("tableBody");
-    const totalQtyCell = document.getElementById("totalQty");
-    const totalKcalCell = document.getElementById("totalKcal");
-    const totalProtCell = document.getElementById("totalProt");
-    const totalCarbCell = document.getElementById("totalCarb");
-    const totalFatCell = document.getElementById("totalFat");
+    function renderInputs() {
+      inputsGrid.innerHTML = "";
+      Object.keys(FOODS).forEach((key) => {
+        const item = FOODS[key];
 
-    // Mappe les noms de champs à leurs inputs
-    const inputMap = {
-      fruitsRouges: document.getElementById("fruitsRouges"),
-      banane: document.getElementById("banane"),
-      floconsAvoine: document.getElementById("floconsAvoine"),
-      huileOlive: document.getElementById("huileOlive"),
-      lentilles: document.getElementById("lentilles"),
-      patesCrues: document.getElementById("patesCrues"),
-      steakHache: document.getElementById("steakHache"),
-      escalopeVolaille: document.getElementById("escalopeVolaille")
-    };
+        const field = document.createElement("div");
+        field.className = "field";
+
+        const label = document.createElement("label");
+        label.setAttribute("for", `qty_${key}`);
+        label.textContent = item.label;
+
+        const hint = document.createElement("span");
+        hint.className = "hint";
+        hint.textContent = item.unit === "g" ? "Quantité en g" : "Nombre entier";
+
+        const input = document.createElement("input");
+        input.type = "number";
+        input.id = `qty_${key}`;
+        input.min = "0";
+        input.step = item.unit === "g" ? "1" : "1";
+        input.value = "0";
+        input.inputMode = "numeric";
+
+        field.appendChild(label);
+        field.appendChild(hint);
+        field.appendChild(input);
+        inputsGrid.appendChild(field);
+
+        inputRefs[key] = input;
+
+        // Recalcul instantané sur saisie
+        input.addEventListener("input", renderTable);
+      });
+    }
+
+    function renderFoodList() {
+      foodList.innerHTML = "";
+      const table = document.createElement("table");
+      table.style.width = "100%";
+      table.style.borderCollapse = "collapse";
+      table.style.border = `1px solid var(--border)`;
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:.5rem;border-bottom:1px solid var(--border);background:#f3f4f6;">Identifiant</th>
+            <th style="text-align:left;padding:.5rem;border-bottom:1px solid var(--border);background:#f3f4f6;">Nom</th>
+            <th style="text-align:left;padding:.5rem;border-bottom:1px solid var(--border);background:#f3f4f6;">Unit</th>
+            <th style="text-align:left;padding:.5rem;border-bottom:1px solid var(--border);background:#f3f4f6;">Ref</th>
+            <th style="text-align:left;padding:.5rem;border-bottom:1px solid var(--border);background:#f3f4f6;">kcal / prot / carb / fat</th>
+            <th style="text-align:left;padding:.5rem;border-bottom:1px solid var(--border);background:#f3f4f6;">Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+      const tbody = table.querySelector("tbody");
+
+      Object.keys(FOODS).forEach((key, idx) => {
+        const it = FOODS[key];
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td style="padding:.5rem;border-bottom:1px solid var(--border);${idx%2?`background:${getComputedStyle(document.documentElement).getPropertyValue('--row-alt')}`:''}">${key}</td>
+          <td style="padding:.5rem;border-bottom:1px solid var(--border);${idx%2?`background:${getComputedStyle(document.documentElement).getPropertyValue('--row-alt')}`:''}">${it.label}</td>
+          <td style="padding:.5rem;border-bottom:1px solid var(--border);${idx%2?`background:${getComputedStyle(document.documentElement).getPropertyValue('--row-alt')}`:''}">${it.unit}</td>
+          <td style="padding:.5rem;border-bottom:1px solid var(--border);${idx%2?`background:${getComputedStyle(document.documentElement).getPropertyValue('--row-alt')}`:''}">${it.ref}</td>
+          <td style="padding:.5rem;border-bottom:1px solid var(--border);${idx%2?`background:${getComputedStyle(document.documentElement).getPropertyValue('--row-alt')}`:''}">
+            ${it.kcal} / ${it.prot} / ${it.carb} / ${it.fat}
+          </td>
+          <td style="padding:.5rem;border-bottom:1px solid var(--border);${idx%2?`background:${getComputedStyle(document.documentElement).getPropertyValue('--row-alt')}`:''}">
+            <div class="inline-actions">
+              <button type="button" class="secondary" data-edit="${key}">Modifier</button>
+              <button type="button" class="danger" data-delete="${key}">Supprimer</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      foodList.appendChild(table);
+
+      // Actions: Modifier / Supprimer
+      foodList.querySelectorAll("[data-edit]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const k = btn.getAttribute("data-edit");
+          const it = FOODS[k];
+          // Pré-remplit l'éditeur
+          edKey.value = k;
+          edLabel.value = it.label;
+          edUnit.value = it.unit;
+          edRef.value = it.ref;
+          edKcal.value = it.kcal;
+          edProt.value = it.prot;
+          edCarb.value = it.carb;
+          edFat.value = it.fat;
+          edKey.disabled = true; // On ne change pas l'identifiant lors d'une modif
+        });
+      });
+
+      foodList.querySelectorAll("[data-delete]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const k = btn.getAttribute("data-delete");
+          if (!confirm(`Supprimer l'aliment "${k}" ?`)) return;
+          delete FOODS[k];
+          saveFoods(FOODS);
+          // Ré-érige les inputs et reset la map
+          rebuildInputsAndTable();
+          // Si on supprimait un champ en cours d'édition, nettoie
+          if (edKey.value === k) clearEditor();
+        });
+      });
+    }
 
     // —————————————————————————————————————————————————————————————
-    // Rendu du tableau
+    // Rendu du tableau des calculs
     // —————————————————————————————————————————————————————————————
     function renderTable() {
-      // Récupère les quantités saisies
-      const quantities = {};
-      for (const key in inputMap) {
-        quantities[key] = number(inputMap[key].value);
-      }
-
-      // Vide le tbody
       tableBody.innerHTML = "";
 
-      // Totaux
       let totalKcal = 0, totalProt = 0, totalCarb = 0, totalFat = 0;
 
-      // Calcule et génère chaque ligne
-      for (const key of Object.keys(nutritionData)) {
-        const item = nutritionData[key];
-        const qty = quantities[key];
+      Object.keys(FOODS).forEach((key) => {
+        const item = FOODS[key];
+        const input = inputRefs[key];
+        if (!input) return;
+        const qty = toNumber(input.value);
 
-        const macros = computeEntryMacros(key, qty);
-        if (!macros) continue;
+        const macros = computeEntryMacros(item, qty);
 
         totalKcal += macros.kcal;
         totalProt += macros.prot;
@@ -418,78 +512,151 @@
 
         const tr = document.createElement("tr");
 
-        // Colonne aliment
         const tdFood = document.createElement("td");
         tdFood.textContent = item.label;
         tr.appendChild(tdFood);
 
-        // Colonne quantité (affiche unité dynamique)
         const tdQty = document.createElement("td");
         tdQty.textContent = item.unit === "g" ? `${qty} g` : `${qty} banane${qty > 1 ? "s" : ""}`;
         tr.appendChild(tdQty);
 
-        // Colonnes macros
-        const tdKcal = document.createElement("td");
-        tdKcal.textContent = macros.kcal.toString();
-        tr.appendChild(tdKcal);
+        const tdKcal = document.createElement("td"); tdKcal.textContent = round2(macros.kcal);
+        const tdProt = document.createElement("td"); tdProt.textContent = round2(macros.prot);
+        const tdCarb = document.createElement("td"); tdCarb.textContent = round2(macros.carb);
+        const tdFat  = document.createElement("td"); tdFat.textContent  = round2(macros.fat);
 
-        const tdProt = document.createElement("td");
-        tdProt.textContent = macros.prot.toString();
-        tr.appendChild(tdProt);
-
-        const tdCarb = document.createElement("td");
-        tdCarb.textContent = macros.carb.toString();
-        tr.appendChild(tdCarb);
-
-        const tdFat = document.createElement("td");
-        tdFat.textContent = macros.fat.toString();
-        tr.appendChild(tdFat);
-
+        tr.appendChild(tdKcal); tr.appendChild(tdProt); tr.appendChild(tdCarb); tr.appendChild(tdFat);
         tableBody.appendChild(tr);
-      }
-
-      // Met à jour la ligne de totaux
-      const totalQtyText = (() => {
-        // Affiche un résumé simple: somme des g + nb de bananes
-        const gramsSum = Object.keys(nutritionData)
-          .filter(k => nutritionData[k].unit === "g")
-          .reduce((acc, k) => acc + number(inputMap[k].value), 0);
-        const bananas = number(inputMap.banane.value);
-        if (bananas > 0) return `${round2(gramsSum)} g + ${bananas} banane${bananas > 1 ? "s" : ""}`;
-        return `${round2(gramsSum)} g`;
-      })();
-
-      totalQtyCell.textContent = totalQtyText;
-      totalKcalCell.textContent = round2(totalKcal).toString();
-      totalProtCell.textContent = round2(totalProt).toString();
-      totalCarbCell.textContent = round2(totalCarb).toString();
-      totalFatCell.textContent = round2(totalFat).toString();
-    }
-
-    // —————————————————————————————————————————————————————————————
-    // Écouteurs & comportements
-    // —————————————————————————————————————————————————————————————
-    // Recalcul sur clic bouton Calculer
-    calculateBtn.addEventListener("click", renderTable);
-
-    // Recalcul en direct sur changement d'input (sans recharger)
-    for (const key in inputMap) {
-      inputMap[key].addEventListener("input", () => {
-        // Option: recalcul immédiat pour feedback instantané
-        renderTable();
       });
+
+      // Total quantité: somme des g + nb de bananes (et de tout ce qui est count)
+      const gramsSum = Object.keys(FOODS)
+        .filter(k => FOODS[k].unit === "g")
+        .reduce((acc, k) => acc + toNumber(inputRefs[k]?.value || 0), 0);
+
+      const countsSummary = Object.keys(FOODS)
+        .filter(k => FOODS[k].unit === "count")
+        .map(k => ({ label: FOODS[k].label, n: toNumber(inputRefs[k]?.value || 0) }))
+        .filter(x => x.n > 0)
+        .map(x => `${x.n} ${x.label.toLowerCase()}`);
+
+      const qtyText = countsSummary.length
+        ? `${round2(gramsSum)} g + ${countsSummary.join(" + ")}`
+        : `${round2(gramsSum)} g`;
+
+      totalQtyCell.textContent = qtyText;
+      totalKcalCell.textContent = round2(totalKcal);
+      totalProtCell.textContent = round2(totalProt);
+      totalCarbCell.textContent = round2(totalCarb);
+      totalFatCell.textContent  = round2(totalFat);
     }
 
-    // Réinitialise tous les champs à 0 et recalcul
+    // —————————————————————————————————————————————————————————————
+    // Actions globales
+    // —————————————————————————————————————————————————————————————
+    calculateBtn.addEventListener("click", renderTable);
     resetBtn.addEventListener("click", () => {
-      for (const key in inputMap) {
-        inputMap[key].value = "0";
-      }
+      Object.keys(inputRefs).forEach(k => { inputRefs[k].value = "0"; });
       renderTable();
     });
 
-    // Premier rendu (état initial)
+    // —————————————————————————————————————————————————————————————
+    // Éditeur: création/modification d'un aliment
+    // —————————————————————————————————————————————————————————————
+    function clearEditor() {
+      edKey.value = "";
+      edLabel.value = "";
+      edUnit.value = "g";
+      edRef.value = "per100";
+      edKcal.value = "";
+      edProt.value = "";
+      edCarb.value = "";
+      edFat.value = "";
+      edKey.disabled = false;
+    }
+    clearEditorBtn.addEventListener("click", clearEditor);
+
+    editorForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const key = edKey.value.trim();
+      const label = edLabel.value.trim();
+      const unit = edUnit.value;
+      const ref  = edRef.value;
+      const kcal = toNumber(edKcal.value);
+      const prot = toNumber(edProt.value);
+      const carb = toNumber(edCarb.value);
+      const fat  = toNumber(edFat.value);
+
+      if (!key || !label) {
+        alert("Identifiant et nom sont requis.");
+        return;
+      }
+      if (!/^[A-Za-z0-9_]+$/.test(key)) {
+        alert("L'identifiant doit contenir uniquement des lettres, chiffres ou underscores (pas d'espaces).");
+        return;
+      }
+      if (!(unit === "g" || unit === "count")) {
+        alert("Unité invalide.");
+        return;
+      }
+      if (!(ref === "per100" || ref === "perUnit")) {
+        alert("Référence invalide.");
+        return;
+      }
+
+      // Enregistre (ajout ou modification)
+      FOODS[key] = { label, unit, ref, kcal, prot, carb, fat };
+      saveFoods(FOODS);
+
+      // Reconstruit les inputs et réactualise le tableau
+      rebuildInputsAndTable();
+
+      // Pré-remplit un champ quantité pour feedback immédiat
+      if (inputRefs[key]) inputRefs[key].value = inputRefs[key].value || "0";
+
+      clearEditor();
+    });
+
+    // —————————————————————————————————————————————————————————————
+    // Reconstruction (utile après modification du dictionnaire)
+    // —————————————————————————————————————————————————————————————
+    function rebuildInputsAndTable() {
+      // Sauvegarde les valeurs actuelles pour les restaurer après rebuild
+      const oldValues = {};
+      Object.keys(inputRefs).forEach(k => { oldValues[k] = inputRefs[k].value; });
+
+      // Efface références et reconstruit inputs
+      Object.keys(inputRefs).forEach(k => delete inputRefs[k]);
+      renderInputs();
+
+      // Restaure quand possible
+      Object.keys(oldValues).forEach(k => {
+        if (inputRefs[k]) inputRefs[k].value = oldValues[k];
+      });
+
+      // Reconstruit liste d'aliments & tableau
+      renderFoodList();
+      renderTable();
+    }
+
+    // —————————————————————————————————————————————————————————————
+    // Initialisation
+    // —————————————————————————————————————————————————————————————
+    renderInputs();
+    renderFoodList();
     renderTable();
+
+    // —————————————————————————————————————————————————————————————
+    // Commentaires inline clés:
+    // - DEFAULT_FOODS: dictionnaire initial, modifiable via l’éditeur (persisté localStorage)
+    // - renderInputs(): génère la grille des champs à partir du dictionnaire
+    // - renderFoodList(): affiche le dictionnaire et offre Modifier/Supprimer
+    // - editorForm submit: ajoute/modifie un aliment, valide les champs, persiste et reconstruit l’UI
+    // - computeEntryMacros(): applique per100 ou perUnit pour calculer les macros proportionnellement
+    // - renderTable(): met à jour le recap et les totaux sans rechargement
+    // - rebuildInputsAndTable(): utilitaire après changements du dictionnaire
+    // —————————————————————————————————————————————————————————————
   </script>
 </body>
 </html>
