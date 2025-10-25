@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tracker Nutritionnel Quotidien</title>
+  <style>
+    /* ——— Reset & base ——— */
+    :root {
+      --bg: #f7f7f9;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #6b7280;
+      --accent: #0ea5e9;
+      --border: #e5e7eb;
+      --row-alt: #fafafa;
+      --focus: #2563eb;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+
+    /* ——— Layout ——— */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1rem 4rem;
+    }
+    header {
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0 0 .5rem;
+      font-size: clamp(1.5rem, 3.5vw, 2rem);
+      letter-spacing: 0.2px;
+    }
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* ——— Card/sections ——— */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    /* ——— Form grid ——— */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem 1rem;
+    }
+    @media (min-width: 720px) {
+      .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: .35rem;
+    }
+    .field label {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .hint {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .field input[type="number"] {
+      width: 100%;
+      padding: .6rem .75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 1rem;
+    }
+    .field input[type="number"]:focus {
+      outline: none;
+      border-color: var(--focus);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    /* ——— Actions ——— */
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    button {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      padding: .6rem .95rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform .05s ease, box-shadow .15s ease, opacity .2s ease;
+    }
+    button:hover { box-shadow: 0 4px 14px rgba(14,165,233,0.25); }
+    button:active { transform: translateY(1px); }
+    button.secondary {
+      background: #fff;
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    /* ——— Table ——— */
+    .table-wrap {
+      margin-top: 1.25rem;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+    }
+    caption {
+      caption-side: top;
+      padding: .75rem;
+      font-weight: 700;
+      text-align: left;
+    }
+    thead th {
+      text-align: left;
+      background: #f3f4f6;
+      border-bottom: 1px solid var(--border);
+      padding: .65rem .75rem;
+      font-size: 0.95rem;
+    }
+    tbody td {
+      border-bottom: 1px solid var(--border);
+      padding: .6rem .75rem;
+      vertical-align: middle;
+    }
+    tbody tr:nth-child(even) td {
+      background: var(--row-alt);
+    }
+    tfoot td {
+      font-weight: 700;
+      background: #eef6ff;
+      border-top: 2px solid var(--accent);
+      padding: .7rem .75rem;
+    }
+
+    /* ——— Small print ——— */
+    .note {
+      margin-top: .75rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="container" aria-labelledby="title">
+    <header>
+      <h1 id="title">Tracker Nutritionnel Quotidien</h1>
+      <p>Entrez vos quantités, puis calculez les calories et macros. Tout est stocké localement, aucun rechargement.</p>
+    </header>
+
+    <section class="card" aria-labelledby="form-title">
+      <h2 id="form-title" style="font-size:1.15rem;margin:0 0 .75rem;">Saisie des quantités</h2>
+
+      <!-- Form simple : inputs numériques avec valeurs par défaut à 0 -->
+      <form id="nutrition-form" autocomplete="off">
+        <div class="grid">
+          <!-- Chaque champ est associé à une clé de l’objet nutritionData -->
+          <div class="field">
+            <label for="fruitsRouges">Fruits rouges</label>
+            <span class="hint">Quantité en g</span>
+            <input id="fruitsRouges" name="fruitsRouges" type="number" min="0" step="1" value="0" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <label for="banane">Banane</label>
+            <span class="hint">Nombre entier</span>
+            <input id="banane" name="banane" type="number" min="0" step="1" value="0" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <label for="floconsAvoine">Flocons d'avoine</label>
+            <span class="hint">Quantité en g</span>
+            <input id="floconsAvoine" name="floconsAvoine" type="number" min="0" step="1" value="0" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <label for="huileOlive">Huile d'olive</label>
+            <span class="hint">Quantité en g</span>
+            <input id="huileOlive" name="huileOlive" type="number" min="0" step="1" value="0" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <label for="lentilles">Lentilles en conserve</label>
+            <span class="hint">Quantité en g (égouttées)</span>
+            <input id="lentilles" name="lentilles" type="number" min="0" step="1" value="0" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <label for="patesCrues">Pâtes (crues)</label>
+            <span class="hint">Quantité en g</span>
+            <input id="patesCrues" name="patesCrues" type="number" min="0" step="1" value="0" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <label for="steakHache">Steak haché (15% MG)</label>
+            <span class="hint">Quantité en g</span>
+            <input id="steakHache" name="steakHache" type="number" min="0" step="1" value="0" inputmode="numeric" />
+          </div>
+
+          <div class="field">
+            <label for="escalopeVolaille">Escalope de poulet ou dinde</label>
+            <span class="hint">Quantité en g</span>
+            <input id="escalopeVolaille" name="escalopeVolaille" type="number" min="0" step="1" value="0" inputmode="numeric" />
+          </div>
+        </div>
+
+        <div class="actions" aria-label="Actions">
+          <!-- Bouton Calculer déclenche le recalcul et la mise à jour du tableau -->
+          <button type="button" id="calculateBtn" aria-label="Calculer les apports">Calculer</button>
+          <!-- Bouton Réinitialiser remet tous les champs à 0 -->
+          <button type="button" class="secondary" id="resetBtn" aria-label="Réinitialiser">Réinitialiser</button>
+        </div>
+      </form>
+
+      <p class="note">Les macros sont calculées à partir de valeurs fixes par 100 g (ou par unité pour la banane).</p>
+    </section>
+
+    <section class="table-wrap card" aria-labelledby="table-title">
+      <h2 id="table-title" style="font-size:1.15rem;margin:0 0 .75rem;">Récapitulatif nutritionnel</h2>
+      <!-- Tableau dynamique : reconstruit à chaque calcul -->
+      <table id="resultTable">
+        <caption>Apports par aliment et totaux</caption>
+        <thead>
+          <tr>
+            <th scope="col">Aliment</th>
+            <th scope="col">Quantité</th>
+            <th scope="col">Calories (kcal)</th>
+            <th scope="col">Protéines (g)</th>
+            <th scope="col">Glucides (g)</th>
+            <th scope="col">Lipides (g)</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- Lignes injectées par JS -->
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Total</td>
+            <td id="totalQty">—</td>
+            <td id="totalKcal">0</td>
+            <td id="totalProt">0</td>
+            <td id="totalCarb">0</td>
+            <td id="totalFat">0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    // —————————————————————————————————————————————————————————————
+    // Données nutritionnelles fixes
+    // Chaque entrée définit le mode de calcul:
+    // - unit: "g" pour valeurs par 100 g; "count" pour banane par unité
+    // - ref: "per100" ou "perUnit" indique l'échelle de référence
+    // —————————————————————————————————————————————————————————————
+    const nutritionData = {
+      fruitsRouges: {
+        label: "Fruits rouges",
+        unit: "g",
+        ref: "per100",
+        kcal: 43, prot: 1.0, carb: 10.0, fat: 0.3
+      },
+      banane: {
+        label: "Banane",
+        unit: "count",
+        ref: "perUnit",
+        kcal: 89, prot: 1.1, carb: 23.0, fat: 0.3,
+        // info utile si on souhaitait estimer en g (~120 g), non utilisé dans le calcul
+        approxGramPerUnit: 120
+      },
+      floconsAvoine: {
+        label: "Flocons d'avoine",
+        unit: "g",
+        ref: "per100",
+        kcal: 389, prot: 17.0, carb: 66.0, fat: 7.0
+      },
+      huileOlive: {
+        label: "Huile d'olive",
+        unit: "g",
+        ref: "per100",
+        kcal: 884, prot: 0.0, carb: 0.0, fat: 100.0
+      },
+      lentilles: {
+        label: "Lentilles en conserve",
+        unit: "g",
+        ref: "per100",
+        kcal: 116, prot: 9.0, carb: 20.0, fat: 0.4
+      },
+      patesCrues: {
+        label: "Pâtes crues",
+        unit: "g",
+        ref: "per100",
+        kcal: 371, prot: 13.0, carb: 75.0, fat: 1.5
+      },
+      steakHache: {
+        label: "Steak haché (15% MG)",
+        unit: "g",
+        ref: "per100",
+        kcal: 250, prot: 20.0, carb: 0.0, fat: 18.0
+      },
+      escalopeVolaille: {
+        label: "Escalope de poulet/dinde",
+        unit: "g",
+        ref: "per100",
+        kcal: 110, prot: 23.0, carb: 0.0, fat: 1.5
+      }
+    };
+
+    // —————————————————————————————————————————————————————————————
+    // Utilitaires
+    // —————————————————————————————————————————————————————————————
+    const number = (v) => {
+      const n = Number(v);
+      return Number.isFinite(n) && n >= 0 ? n : 0;
+    };
+
+    const round2 = (v) => Math.round(v * 100) / 100;
+
+    // Calcule les macros pour une entrée donnée et une quantité
+    function computeEntryMacros(key, qty) {
+      const item = nutritionData[key];
+      if (!item) return null;
+
+      // Pour les unités "g" avec ref per100: proportion = qty / 100
+      // Pour banane "count" avec ref perUnit: proportion = qty (chaque unité)
+      const proportion = item.ref === "per100"
+        ? (qty / 100)
+        : qty;
+
+      return {
+        kcal: round2(item.kcal * proportion),
+        prot: round2(item.prot * proportion),
+        carb: round2(item.carb * proportion),
+        fat:  round2(item.fat  * proportion)
+      };
+    }
+
+    // —————————————————————————————————————————————————————————————
+    // DOM refs
+    // —————————————————————————————————————————————————————————————
+    const form = document.getElementById("nutrition-form");
+    const calculateBtn = document.getElementById("calculateBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const tableBody = document.getElementById("tableBody");
+    const totalQtyCell = document.getElementById("totalQty");
+    const totalKcalCell = document.getElementById("totalKcal");
+    const totalProtCell = document.getElementById("totalProt");
+    const totalCarbCell = document.getElementById("totalCarb");
+    const totalFatCell = document.getElementById("totalFat");
+
+    // Mappe les noms de champs à leurs inputs
+    const inputMap = {
+      fruitsRouges: document.getElementById("fruitsRouges"),
+      banane: document.getElementById("banane"),
+      floconsAvoine: document.getElementById("floconsAvoine"),
+      huileOlive: document.getElementById("huileOlive"),
+      lentilles: document.getElementById("lentilles"),
+      patesCrues: document.getElementById("patesCrues"),
+      steakHache: document.getElementById("steakHache"),
+      escalopeVolaille: document.getElementById("escalopeVolaille")
+    };
+
+    // —————————————————————————————————————————————————————————————
+    // Rendu du tableau
+    // —————————————————————————————————————————————————————————————
+    function renderTable() {
+      // Récupère les quantités saisies
+      const quantities = {};
+      for (const key in inputMap) {
+        quantities[key] = number(inputMap[key].value);
+      }
+
+      // Vide le tbody
+      tableBody.innerHTML = "";
+
+      // Totaux
+      let totalKcal = 0, totalProt = 0, totalCarb = 0, totalFat = 0;
+
+      // Calcule et génère chaque ligne
+      for (const key of Object.keys(nutritionData)) {
+        const item = nutritionData[key];
+        const qty = quantities[key];
+
+        const macros = computeEntryMacros(key, qty);
+        if (!macros) continue;
+
+        totalKcal += macros.kcal;
+        totalProt += macros.prot;
+        totalCarb += macros.carb;
+        totalFat  += macros.fat;
+
+        const tr = document.createElement("tr");
+
+        // Colonne aliment
+        const tdFood = document.createElement("td");
+        tdFood.textContent = item.label;
+        tr.appendChild(tdFood);
+
+        // Colonne quantité (affiche unité dynamique)
+        const tdQty = document.createElement("td");
+        tdQty.textContent = item.unit === "g" ? `${qty} g` : `${qty} banane${qty > 1 ? "s" : ""}`;
+        tr.appendChild(tdQty);
+
+        // Colonnes macros
+        const tdKcal = document.createElement("td");
+        tdKcal.textContent = macros.kcal.toString();
+        tr.appendChild(tdKcal);
+
+        const tdProt = document.createElement("td");
+        tdProt.textContent = macros.prot.toString();
+        tr.appendChild(tdProt);
+
+        const tdCarb = document.createElement("td");
+        tdCarb.textContent = macros.carb.toString();
+        tr.appendChild(tdCarb);
+
+        const tdFat = document.createElement("td");
+        tdFat.textContent = macros.fat.toString();
+        tr.appendChild(tdFat);
+
+        tableBody.appendChild(tr);
+      }
+
+      // Met à jour la ligne de totaux
+      const totalQtyText = (() => {
+        // Affiche un résumé simple: somme des g + nb de bananes
+        const gramsSum = Object.keys(nutritionData)
+          .filter(k => nutritionData[k].unit === "g")
+          .reduce((acc, k) => acc + number(inputMap[k].value), 0);
+        const bananas = number(inputMap.banane.value);
+        if (bananas > 0) return `${round2(gramsSum)} g + ${bananas} banane${bananas > 1 ? "s" : ""}`;
+        return `${round2(gramsSum)} g`;
+      })();
+
+      totalQtyCell.textContent = totalQtyText;
+      totalKcalCell.textContent = round2(totalKcal).toString();
+      totalProtCell.textContent = round2(totalProt).toString();
+      totalCarbCell.textContent = round2(totalCarb).toString();
+      totalFatCell.textContent = round2(totalFat).toString();
+    }
+
+    // —————————————————————————————————————————————————————————————
+    // Écouteurs & comportements
+    // —————————————————————————————————————————————————————————————
+    // Recalcul sur clic bouton Calculer
+    calculateBtn.addEventListener("click", renderTable);
+
+    // Recalcul en direct sur changement d'input (sans recharger)
+    for (const key in inputMap) {
+      inputMap[key].addEventListener("input", () => {
+        // Option: recalcul immédiat pour feedback instantané
+        renderTable();
+      });
+    }
+
+    // Réinitialise tous les champs à 0 et recalcul
+    resetBtn.addEventListener("click", () => {
+      for (const key in inputMap) {
+        inputMap[key].value = "0";
+      }
+      renderTable();
+    });
+
+    // Premier rendu (état initial)
+    renderTable();
+  </script>
+</body>
+</html>
