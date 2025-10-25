@@ -1,0 +1,18 @@
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" version="2.0">
+  <channel>
+    <title>Le règne de la Quantité</title>
+    <link>https://example.com</link>
+    <description>Podcast privé de mon livre audio</description>
+    <language>fr-fr</language>
+    <item>
+      <title>Episode 1 : Le Règne de la Quantité</title>
+      <pubDate>Sat, 01 Jan 2023 00:00:00 +0000</pubDate>
+      <description>Mon livre audio M4B</description>
+      <!-- URL pointant vers votre fichier Dropbox (ou autre) -->
+      <enclosure url="https://www.dropbox.com/scl/fi/h66ood4mkktvgd3wscoa1/R-gne-Quantit-_2.m4b?rlkey=l3irp1mvld9xh1rsbp9o27lev&st=7ii12mri&raw=1"
+                 length="12345678"
+                 type="audio/mpeg"/>
+      <guid>https://www.dropbox.com/scl/fi/h66ood4mkktvgd3wscoa1/R-gne-Quantit-_2.m4b?rlkey=l3irp1mvld9xh1rsbp9o27lev&st=7ii12mri&raw=1"</guid>
+    </item>
+  </channel>
+</rss>
