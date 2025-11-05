@@ -1,42 +1,67 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="classic">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Chat Gemini – GitHub Pages</title>
-  <link rel="stylesheet" href="AI_styles.css" />
+  <title>Chat Gemini – Thèmes clairs + Préprompts</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="app-header">
     <div class="brand">Chat Gemini</div>
-    <div class="actions">
+    <div class="toolbar">
+      <label class="field">
+        <span>Thème</span>
+        <select id="themeSelect" aria-label="Thème">
+          <option value="classic">Classique</option>
+          <option value="pastel">Pastel</option>
+          <option value="neumorphic">Neumorphique</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Modèle</span>
+        <select id="modelSelect" aria-label="Modèle">
+          <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
+          <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+        </select>
+      </label>
+
       <button id="changeKeyBtn" class="btn secondary">Changer la clé</button>
       <button id="clearBtn" class="btn danger">Effacer l’historique</button>
     </div>
   </header>
 
-  <main class="chat-container">
-    <div id="messages" class="messages" aria-live="polite"></div>
+  <main class="layout">
+    <aside class="side">
+      <h3>Préprompts</h3>
+      <p class="muted">Choisissez un style pour guider les réponses du modèle, appliqué en tête de conversation.</p>
+      <div id="prepromptList" class="chips" role="listbox" aria-label="Préprompts">
+        <!-- rempli par JS -->
+      </div>
+      <div class="note muted">Astuce: changez de préprompt puis commencez une nouvelle conversation pour l’appliquer clairement.</div>
+    </aside>
 
-    <form id="chatForm" class="composer" autocomplete="off">
-      <input id="userInput" type="text" placeholder="Écrivez votre message..." aria-label="Message" required />
-      <button id="sendBtn" class="btn primary" type="submit">Envoyer</button>
-    </form>
+    <section class="chat-area">
+      <div id="messages" class="messages" aria-live="polite"></div>
+      <form id="chatForm" class="composer" autocomplete="off">
+        <input id="userInput" type="text" placeholder="Écrivez votre message..." aria-label="Message" required />
+        <button id="sendBtn" class="btn primary" type="submit">Envoyer</button>
+      </form>
+    </section>
   </main>
 
   <!-- Dialog de saisie de clé API -->
   <dialog id="apiKeyDialog">
     <form method="dialog" class="dialog-form" id="apiKeyForm">
       <h3>Entrez votre clé API Gemini</h3>
-      <p>La clé est stockée uniquement sur votre navigateur (localStorage) et n’est jamais envoyée ailleurs que vers l’API Gemini lors des requêtes.</p>
+      <p>La clé reste dans votre navigateur (localStorage) et n’est utilisée que pour appeler l’API Gemini lors des requêtes.</p>
       <input id="apiKeyInput" type="password" placeholder="GEMINI_API_KEY" required />
       <div class="dialog-actions">
         <button value="cancel" class="btn secondary">Annuler</button>
         <button id="saveKeyBtn" value="default" class="btn primary">Enregistrer</button>
       </div>
-      <small>
-        Astuce: récupérez votre clé dans Google AI Studio (API Keys), puis collez-la ici.
-      </small>
+      <small>Créez/obtenez la clé via Google AI Studio (API Keys) et collez-la ici.</small>
     </form>
   </dialog>
 
@@ -46,6 +71,6 @@
     </div>
   </template>
 
-  <script src="AI_app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
