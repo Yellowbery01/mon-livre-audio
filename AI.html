@@ -483,20 +483,19 @@
             chatContainer.appendChild(loadingDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            try {
-                const response = await chatSession.sendMessage(message);
-                const responseText = response.response.text();
-
-                // Supprimer l'indicateur de chargement
-                loadingDiv.remove();
-
-                // Ajouter la réponse
-                addMessage(responseText, 'assistant');
-            } catch (error) {
-                loadingDiv.remove();
-                showError(`Erreur : ${error.message}`);
-                console.error('Erreur API:', error);
-            } finally {
+try {
+    console.log('Clé API longueur:', apiKey.length);
+    console.log('Clé API commence par AIzaSy:', apiKey.startsWith('AIzaSy'));
+    
+    genAI = new google.generativeai.GoogleGenerativeAI(apiKey);
+    model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    
+    chatSession = model.startChat({...
+} catch (error) {
+    showError(`Erreur : ${error.message}`);
+    console.error('Erreur complète:', error);
+}
+ finally {
                 sendButton.disabled = false;
                 messageInput.focus();
             }
