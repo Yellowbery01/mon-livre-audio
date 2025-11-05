@@ -1,529 +1,304 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Gemini</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            max-width: 700px;
-            height: 80vh;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 {
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        .header-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .header button {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .header button:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .chat-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            background: #f8f9fa;
-        }
-
-        .message {
-            display: flex;
-            gap: 10px;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message.user {
-            justify-content: flex-end;
-        }
-
-        .message-content {
-            max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            word-wrap: break-word;
-            line-height: 1.5;
-        }
-
-        .user .message-content {
-            background: #667eea;
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-
-        .assistant .message-content {
-            background: white;
-            color: #333;
-            border: 1px solid #e0e0e0;
-            border-bottom-left-radius: 4px;
-        }
-
-        .loading {
-            display: flex;
-            gap: 6px;
-            padding: 12px 16px;
-        }
-
-        .loading-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #667eea;
-            animation: bounce 1.4s infinite;
-        }
-
-        .loading-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .loading-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes bounce {
-            0%, 80%, 100% {
-                transform: translateY(0);
-                opacity: 0.6;
-            }
-            40% {
-                transform: translateY(-10px);
-                opacity: 1;
-            }
-        }
-
-        .api-key-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .api-key-modal.active {
-            display: flex;
-        }
-
-        .api-key-content {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        .api-key-content h2 {
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        .api-key-content p {
-            color: #666;
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-
-        .api-key-content input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            margin-bottom: 15px;
-            font-family: monospace;
-        }
-
-        .api-key-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-
-        .api-key-buttons button {
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-save {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-save:hover {
-            background: #5568d3;
-        }
-
-        .btn-cancel {
-            background: #f0f0f0;
-            color: #333;
-        }
-
-        .btn-cancel:hover {
-            background: #e0e0e0;
-        }
-
-        .input-area {
-            padding: 20px;
-            background: white;
-            border-top: 1px solid #e0e0e0;
-            display: flex;
-            gap: 10px;
-        }
-
-        .input-area input {
-            flex: 1;
-            padding: 12px 16px;
-            border: 1px solid #ddd;
-            border-radius: 24px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-
-        .input-area input:focus {
-            border-color: #667eea;
-        }
-
-        .input-area button {
-            background: #667eea;
-            color: white;
-            border: none;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .input-area button:hover {
-            background: #5568d3;
-            transform: scale(1.05);
-        }
-
-        .input-area button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: scale(1);
-        }
-
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 12px 16px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            border-left: 4px solid #c33;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                height: 90vh;
-                max-width: 100%;
-            }
-
-            .header h1 {
-                font-size: 18px;
-            }
-
-            .message-content {
-                max-width: 90%;
-            }
-
-            .api-key-content {
-                width: 95%;
-            }
-        }
-
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            color: #999;
-            text-align: center;
-        }
-
-        .empty-state h2 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        .empty-state p {
-            font-size: 14px;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chat Gemini – BYOK</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 20px; min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .app {
+      width: 100%; max-width: 820px; height: 86vh; background: #fff; border-radius: 14px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25); display: grid; grid-template-rows: auto 1fr auto;
+      overflow: hidden;
+    }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; color: #fff;
+      background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+    }
+    header h1 { margin: 0; font-size: 18px; font-weight: 600; }
+    .controls { display: flex; gap: 8px; align-items: center; }
+    .controls select, .controls button {
+      border: 1px solid rgba(255,255,255,.5); color: #fff; background: rgba(255,255,255,.15);
+      padding: 8px 10px; border-radius: 8px; font-size: 12px; cursor: pointer;
+    }
+    .controls select { appearance: none; }
+    .controls button:hover { background: rgba(255,255,255,.25); }
+    .chat {
+      background: #f7f8fa; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;
+    }
+    .msg { display: flex; }
+    .msg.user { justify-content: flex-end; }
+    .bubble {
+      max-width: 80%; padding: 12px 14px; border-radius: 12px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word;
+      animation: pop .2s ease;
+    }
+    @keyframes pop { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: translateY(0);} }
+    .user .bubble { background: #667eea; color: #fff; border-bottom-right-radius: 4px; }
+    .assistant .bubble { background: #fff; color: #222; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; }
+    .system { background: #fff7f7; color: #b00020; border-left: 4px solid #b00020; padding: 10px 12px; border-radius: 6px; }
+    .loading { display: inline-flex; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #667eea; animation: bounce 1.2s infinite; }
+    .dot:nth-child(2){ animation-delay:.2s } .dot:nth-child(3){ animation-delay:.4s }
+    @keyframes bounce { 0%,80%,100{ transform: translateY(0); opacity:.5 } 40%{ transform: translateY(-8px); opacity:1 } }
+    .input {
+      background: #fff; border-top: 1px solid #e5e7eb; padding: 12px; display: grid; grid-template-columns: 1fr auto; gap: 10px;
+    }
+    .input input {
+      width: 100%; padding: 12px 16px; border: 1px solid #e5e7eb; border-radius: 24px; outline: none; font-size: 14px;
+    }
+    .input input:focus { border-color: #667eea; }
+    .input button {
+      width: 44px; height: 44px; border-radius: 50%; border: none; background: #667eea; color: #fff; cursor: pointer; font-size: 18px;
+    }
+    .input button:disabled { background: #bbb; cursor: not-allowed; }
+    .modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 10;
+    }
+    .modal.active { display: flex; }
+    .modal .card {
+      width: 92%; max-width: 460px; background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    }
+    .card h2 { margin: 0 0 8px; font-size: 18px; }
+    .card p { margin: 0 0 10px; color: #555; font-size: 14px; }
+    .card input {
+      width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-family: monospace; margin-bottom: 12px;
+    }
+    .card .row { display: flex; gap: 8px; justify-content: flex-end; }
+    .ghost { background: #f1f3f5; color: #222; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; }
+    .primary { background: #667eea; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; }
+    .empty {
+      margin: auto; text-align: center; color: #8a8a8a;
+    }
+    .empty h3 { margin-bottom: 6px; }
+    @media (max-width:640px){ .bubble{max-width:90%} }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>💬 Chat Gemini</h1>
-            <div class="header-buttons">
-                <button onclick="openApiKeyModal()">🔑 Clé API</button>
-                <button onclick="clearChat()">🗑️ Effacer</button>
-            </div>
-        </div>
+  <div class="app">
+    <header>
+      <h1>💬 Chat Gemini (BYOK)</h1>
+      <div class="controls">
+        <select id="modelSelect" title="Modèle">
+          <option value="gemini-1.5-flash" selected>gemini-1.5-flash</option>
+          <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+          <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+        </select>
+        <button id="btnKey">🔑 Clé API</button>
+        <button id="btnClear">🗑️ Effacer</button>
+      </div>
+    </header>
 
-        <div class="chat-container" id="chatContainer">
-            <div class="empty-state">
-                <h2>Commencez une conversation</h2>
-                <p>Entrez votre clé API pour démarrer</p>
-            </div>
-        </div>
-
-        <div class="input-area">
-            <input 
-                type="text" 
-                id="messageInput" 
-                placeholder="Écrivez votre message..."
-                onkeypress="handleKeyPress(event)"
-            >
-            <button onclick="sendMessage()" id="sendButton">✈️</button>
-        </div>
+    <div id="chat" class="chat">
+      <div class="empty">
+        <h3>Commencez une conversation</h3>
+        <p>Ouvrez 🔑 et collez votre clé API Gemini</p>
+      </div>
     </div>
 
-    <!-- Modal Clé API -->
-    <div class="api-key-modal" id="apiKeyModal">
-        <div class="api-key-content">
-            <h2>Configurer la clé API Gemini</h2>
-            <p>Obtenez une clé API gratuite à :</p>
-            <p><a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #667eea;">aistudio.google.com</a></p>
-            <input 
-                type="password" 
-                id="apiKeyInput" 
-                placeholder="Collez votre clé API Gemini"
-            >
-            <div class="api-key-buttons">
-                <button class="btn-cancel" onclick="closeApiKeyModal()">Annuler</button>
-                <button class="btn-save" onclick="saveApiKey()">Enregistrer</button>
-            </div>
-        </div>
+    <div class="input">
+      <input id="msg" type="text" placeholder="Écrivez votre message et appuyez Entrée…" />
+      <button id="send" title="Envoyer">✈️</button>
     </div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@google/generative-ai@latest"></script>
-    <script>
-        let genAI = null;
-        let model = null;
-        let chatSession = null;
-        const chatContainer = document.getElementById('chatContainer');
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
-        const apiKeyModal = document.getElementById('apiKeyModal');
-        const apiKeyInput = document.getElementById('apiKeyInput');
+  <div id="modal" class="modal" role="dialog" aria-modal="true">
+    <div class="card">
+      <h2>Configurer la clé API</h2>
+      <p>Obtenez une clé sur aistudio.google.com/app/apikey et collez-la ici (elle reste dans votre navigateur).</p>
+      <input id="apiKey" type="password" placeholder="AIzaSy..." inputmode="latin" autocomplete="off" />
+      <div class="row">
+        <button class="ghost" id="cancelKey">Annuler</button>
+        <button class="primary" id="saveKey">Enregistrer</button>
+      </div>
+      <p style="margin-top:8px;font-size:12px;color:#777">Astuce: votre clé devrait commencer par AIzaSy et faire ~39 caractères.</p>
+    </div>
+  </div>
 
-        // Initialiser
-        function initializeChat() {
-            const apiKey = localStorage.getItem('gemini_api_key');
-            if (!apiKey) {
-                openApiKeyModal();
-                return;
-            }
+  <script src="https://cdn.jsdelivr.net/npm/@google/generative-ai@latest"></script>
+  <script>
+    const LS_KEY = 'gemini_api_key';
+    const LS_MODEL = 'gemini_model';
+    let genAI = null;
+    let model = null;
+    let chat = null;
 
-            try {
-                genAI = new google.generativeai.GoogleGenerativeAI(apiKey);
-                model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
-                
-                // Initialiser une session de chat
-                chatSession = model.startChat({
-                    history: [],
-                    generationConfig: {
-                        maxOutputTokens: 1000,
-                    },
-                });
+    const el = {
+      chat: document.getElementById('chat'),
+      msg: document.getElementById('msg'),
+      send: document.getElementById('send'),
+      modal: document.getElementById('modal'),
+      apiKey: document.getElementById('apiKey'),
+      btnKey: document.getElementById('btnKey'),
+      btnClear: document.getElementById('btnClear'),
+      modelSelect: document.getElementById('modelSelect'),
+      cancelKey: document.getElementById('cancelKey'),
+      saveKey: document.getElementById('saveKey'),
+    };
 
-                if (chatContainer.querySelector('.empty-state')) {
-                    chatContainer.innerHTML = '';
-                }
-                
-                messageInput.disabled = false;
-                sendButton.disabled = false;
-            } catch (error) {
-                showError('Erreur : Clé API invalide. Vérifiez et réessayez.');
-                localStorage.removeItem('gemini_api_key');
-                openApiKeyModal();
-            }
+    function showModal() { el.modal.classList.add('active'); el.apiKey.value = localStorage.getItem(LS_KEY) || ''; el.apiKey.focus(); }
+    function hideModal() { el.modal.classList.remove('active'); }
+
+    function addSystem(text) {
+      const div = document.createElement('div');
+      div.className = 'system';
+      div.textContent = text;
+      el.chat.appendChild(div);
+      el.chat.scrollTop = el.chat.scrollHeight;
+    }
+
+    function addMsg(text, who) {
+      const row = document.createElement('div');
+      row.className = `msg ${who}`;
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+      row.appendChild(bubble);
+      if (who === 'user') row.classList.add('user'); else row.classList.add('assistant');
+      el.chat.appendChild(row);
+      el.chat.scrollTop = el.chat.scrollHeight;
+    }
+
+    function addLoading() {
+      const row = document.createElement('div');
+      row.className = 'msg assistant';
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      const dots = document.createElement('div');
+      dots.className = 'loading';
+      dots.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+      bubble.appendChild(dots);
+      row.appendChild(bubble);
+      el.chat.appendChild(row);
+      el.chat.scrollTop = el.chat.scrollHeight;
+      return row;
+    }
+
+    function validateKeyFormat(key) {
+      return typeof key === 'string' && key.startsWith('AIzaSy') && key.length >= 35 && key.length <= 120;
+    }
+
+    function initClient() {
+      const apiKey = localStorage.getItem(LS_KEY);
+      const modelName = localStorage.getItem(LS_MODEL) || el.modelSelect.value;
+
+      if (!apiKey) {
+        showModal();
+        return false;
+      }
+      if (!validateKeyFormat(apiKey)) {
+        addSystem('Clé API au mauvais format. Ouvrez 🔑 et recoller la clé (doit commencer par AIzaSy).');
+        showModal();
+        return false;
+      }
+
+      console.log('API key length:', apiKey.length, 'prefix OK:', apiKey.startsWith('AIzaSy'));
+      try {
+        genAI = new google.generativeai.GoogleGenerativeAI(apiKey);
+        model = genAI.getGenerativeModel({
+          model: modelName,
+          // Vous pouvez ajouter generationConfig ici si besoin
+        });
+        chat = model.startChat({ history: [] });
+        return true;
+      } catch (e) {
+        console.error('Init error:', e);
+        addSystem('Erreur d’initialisation SDK. Vérifiez la clé et réessayez.');
+        return false;
+      }
+    }
+
+    async function send() {
+      const text = el.msg.value.trim();
+      if (!text) return;
+      if (!chat && !initClient()) return;
+
+      if (el.chat.querySelector('.empty')) el.chat.innerHTML = '';
+      addMsg(text, 'user');
+      el.msg.value = '';
+      el.send.disabled = true;
+
+      const loader = addLoading();
+      try {
+        const res = await chat.sendMessage(text);
+        // Nouveau SDK: réponse dans res.response.text()
+        const out = res?.response?.text?.() ?? '';
+        loader.remove();
+        if (!out) {
+          addSystem('Réponse vide du modèle.');
+        } else {
+          addMsg(out, 'assistant');
         }
-
-        function openApiKeyModal() {
-            apiKeyModal.classList.add('active');
-            apiKeyInput.focus();
-            const stored = localStorage.getItem('gemini_api_key');
-            if (stored) {
-                apiKeyInput.value = stored;
-            }
+      } catch (err) {
+        loader.remove();
+        console.error('API error:', err);
+        const code = err?.status || err?.code || '';
+        const msg = err?.message || 'Erreur inconnue';
+        if (String(code) === '429') {
+          addSystem('429 Rate limit: vous avez atteint la limite. Patientez puis réessayez.');
+        } else if (String(code) === '401' || /api key/i.test(msg)) {
+          addSystem('Clé API invalide ou non autorisée. Ouvrez 🔑 et collez une clé valide.');
+        } else if (String(code) === '400' && /INVALID_ARGUMENT|model/i.test(msg)) {
+          addSystem('Requête invalide ou nom de modèle incorrect. Essayez gemini-1.5-flash dans le sélecteur.');
+        } else {
+          addSystem(`Erreur: ${msg}`);
         }
+      } finally {
+        el.send.disabled = false;
+        el.msg.focus();
+      }
+    }
 
-        function closeApiKeyModal() {
-            apiKeyModal.classList.remove('active');
-        }
+    // UI events
+    el.btnKey.addEventListener('click', showModal);
+    el.cancelKey.addEventListener('click', hideModal);
+    el.saveKey.addEventListener('click', () => {
+      const key = el.apiKey.value.trim();
+      if (!validateKeyFormat(key)) {
+        addSystem('Format de clé non valide. Elle doit commencer par AIzaSy.');
+        return;
+      }
+      localStorage.setItem(LS_KEY, key);
+      hideModal();
+      if (initClient()) addSystem('Clé API sauvegardée.');
+    });
 
-        function saveApiKey() {
-            const key = apiKeyInput.value.trim();
-            if (!key) {
-                alert('Veuillez entrer une clé API');
-                return;
-            }
-            localStorage.setItem('gemini_api_key', key);
-            closeApiKeyModal();
-            initializeChat();
-        }
+    el.modelSelect.addEventListener('change', () => {
+      const name = el.modelSelect.value;
+      localStorage.setItem(LS_MODEL, name);
+      // Redémarrer la session pour prendre en compte le modèle
+      if (genAI) {
+        model = genAI.getGenerativeModel({ model: name });
+        chat = model.startChat({ history: [] });
+        addSystem(`Modèle sélectionné: ${name}`);
+      }
+    });
 
-        function clearChat() {
-            if (confirm('Êtes-vous sûr de vouloir effacer la conversation ?')) {
-                chatContainer.innerHTML = '';
-                chatSession = model.startChat({
-                    history: [],
-                    generationConfig: {
-                        maxOutputTokens: 1000,
-                    },
-                });
-            }
-        }
+    el.btnClear.addEventListener('click', () => {
+      if (!confirm('Effacer la conversation ?')) return;
+      el.chat.innerHTML = '';
+      if (model) chat = model.startChat({ history: [] });
+      addSystem('Historique effacé.');
+    });
 
-        function handleKeyPress(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                sendMessage();
-            }
-        }
+    el.send.addEventListener('click', send);
+    el.msg.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    });
 
-        async function sendMessage() {
-            const message = messageInput.value.trim();
-            if (!message || !chatSession) return;
-
-            // Ajouter le message de l'utilisateur
-            addMessage(message, 'user');
-            messageInput.value = '';
-            sendButton.disabled = true;
-
-            // Afficher l'indicateur de chargement
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'message assistant';
-            loadingDiv.innerHTML = `
-                <div class="loading">
-                    <div class="loading-dot"></div>
-                    <div class="loading-dot"></div>
-                    <div class="loading-dot"></div>
-                </div>
-            `;
-            chatContainer.appendChild(loadingDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-
-try {
-    console.log('Clé API longueur:', apiKey.length);
-    console.log('Clé API commence par AIzaSy:', apiKey.startsWith('AIzaSy'));
-    
-    genAI = new google.generativeai.GoogleGenerativeAI(apiKey);
-    model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-    
-    chatSession = model.startChat({...
-} catch (error) {
-    showError(`Erreur : ${error.message}`);
-    console.error('Erreur complète:', error);
-}
- finally {
-                sendButton.disabled = false;
-                messageInput.focus();
-            }
-        }
-
-        function addMessage(text, role) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${role}`;
-
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            contentDiv.textContent = text;
-
-            messageDiv.appendChild(contentDiv);
-            chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function showError(errorText) {
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error-message';
-            errorDiv.textContent = errorText;
-            chatContainer.appendChild(errorDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        // Au chargement
-        window.addEventListener('load', initializeChat);
-    </script>
+    // Auto init
+    window.addEventListener('load', () => {
+      // Restaurer modèle s’il existe
+      const savedModel = localStorage.getItem(LS_MODEL);
+      if (savedModel) el.modelSelect.value = savedModel;
+      initClient();
+    });
+  </script>
 </body>
 </html>
