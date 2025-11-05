@@ -35,11 +35,9 @@
   <main class="layout">
     <aside class="side">
       <h3>Préprompts</h3>
-      <p class="muted">Choisissez un style pour guider les réponses du modèle, appliqué en tête de conversation.</p>
-      <div id="prepromptList" class="chips" role="listbox" aria-label="Préprompts">
-        <!-- rempli par JS -->
-      </div>
-      <div class="note muted">Astuce: changez de préprompt puis commencez une nouvelle conversation pour l’appliquer clairement.</div>
+      <p class="muted">Choisissez un style pour guider les réponses du modèle; appliqué en tête de conversation côté requête.</p>
+      <div id="prepromptList" class="chips" role="listbox" aria-label="Préprompts"></div>
+      <div class="note muted">Astuce: changez de préprompt puis lancez une nouvelle discussion pour clarifier les consignes.</div>
     </aside>
 
     <section class="chat-area">
@@ -51,17 +49,16 @@
     </section>
   </main>
 
-  <!-- Dialog de saisie de clé API -->
   <dialog id="apiKeyDialog">
     <form method="dialog" class="dialog-form" id="apiKeyForm">
       <h3>Entrez votre clé API Gemini</h3>
-      <p>La clé reste dans votre navigateur (localStorage) et n’est utilisée que pour appeler l’API Gemini lors des requêtes.</p>
+      <p>La clé reste dans votre navigateur (localStorage) et n’est utilisée que pour appeler l’API Gemini.</p>
       <input id="apiKeyInput" type="password" placeholder="GEMINI_API_KEY" required />
       <div class="dialog-actions">
         <button value="cancel" class="btn secondary">Annuler</button>
         <button id="saveKeyBtn" value="default" class="btn primary">Enregistrer</button>
       </div>
-      <small>Créez/obtenez la clé via Google AI Studio (API Keys) et collez-la ici.</small>
+      <small>Créez/obtenez la clé dans Google AI Studio (API Keys), puis collez-la ici.</small>
     </form>
   </dialog>
 
